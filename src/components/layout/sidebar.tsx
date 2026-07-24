@@ -84,8 +84,8 @@ function SidebarSection({
   hoveredPath,
   pathname,
   onHover,
-  expandedSection,
-  onExpand,
+  isCollapsed,
+  onToggle,
 }: {
   id: string;
   name: string;
@@ -94,23 +94,25 @@ function SidebarSection({
   hoveredPath: string | null;
   pathname: string;
   onHover: (href: string) => void;
-  expandedSection: string | null;
-  onExpand: (sectionId: string) => void;
+  isCollapsed: boolean;
+  onToggle: (sectionId: string) => void;
 }) {
   const isSectionActive = items.some((item) => {
     if (item.external) return false;
     return pathname === item.href;
   });
-  const isExpanded = expandedSection === id;
+  const isExpanded = !isCollapsed;
 
   return (
-    <div className="flex flex-col" onMouseEnter={() => onExpand(id)}>
-      <div
+    <div className="flex flex-col">
+      <button
+        type="button"
+        onClick={() => onToggle(id)}
         className={cn(
           "flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-sm font-medium transition-colors",
           isSectionActive
             ? "bg-neutral-100 text-neutral-900 dark:bg-zinc-800/80 dark:text-zinc-100"
-            : "text-neutral-600 dark:text-zinc-300"
+            : "text-neutral-600 hover:bg-neutral-100 dark:text-zinc-300 dark:hover:bg-zinc-800/40"
         )}
       >
         <Icon className="h-4 w-4" />
@@ -121,7 +123,7 @@ function SidebarSection({
             isExpanded ? "rotate-0" : "rotate-180"
           )}
         />
-      </div>
+      </button>
 
       <div
         className={cn(
@@ -152,7 +154,9 @@ function SidebarSection({
 export function Sidebar() {
   const pathname = usePathname();
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
+    () => new Set()
+  );
 
   const handleHover = useCallback((href: string) => {
     setHoveredPath(href);
@@ -162,14 +166,20 @@ export function Sidebar() {
     setHoveredPath(null);
   }, []);
 
+  const handleToggleSection = useCallback((sectionId: string) => {
+    setCollapsedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(sectionId)) {
+        next.delete(sectionId);
+      } else {
+        next.add(sectionId);
+      }
+      return next;
+    });
+  }, []);
+
   return (
-    <div
-      className="w-full space-y-2.5 pb-8"
-      onMouseLeave={() => {
-        handleMouseLeave();
-        setExpandedSection(null);
-      }}
-    >
+    <div className="w-full space-y-6 pb-8" onMouseLeave={handleMouseLeave}>
       <SidebarSection
         id="sidebar-extra"
         name={SIDEBAR_EXTRA.name}
@@ -178,8 +188,8 @@ export function Sidebar() {
         hoveredPath={hoveredPath}
         pathname={pathname}
         onHover={handleHover}
-        expandedSection={expandedSection}
-        onExpand={setExpandedSection}
+        isCollapsed={collapsedSections.has("sidebar-extra")}
+        onToggle={handleToggleSection}
       />
 
       {BLOG_CATEGORIES.map((category) => (
@@ -196,8 +206,8 @@ export function Sidebar() {
           hoveredPath={hoveredPath}
           pathname={pathname}
           onHover={handleHover}
-          expandedSection={expandedSection}
-          onExpand={setExpandedSection}
+          isCollapsed={collapsedSections.has(category.name)}
+          onToggle={handleToggleSection}
         />
       ))}
     </div>
