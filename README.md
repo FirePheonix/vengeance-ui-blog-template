@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# vengeance-bog-template
 
-## Getting Started
+Blog starter that ports the **Vengeance UI `/docs` shell** into a standalone **Next.js + Tailwind CSS v4** app.
 
-First, run the development server:
+## What matches Vengeance UI docs
+
+- Sticky top navbar + theme toggle
+- Left sidebar index with section headers, nested links, hover motion
+- Diagonal striped divider rail between nav and content
+- Docs-style article typography (headers, body, code blocks with copy)
+- Right “On this page” TOC (xl+)
+
+## Sample posts
+
+Famous technical topics as original sample essays (inspired by well-known essays — not copies):
+
+- Maker's Schedule, Manager's Schedule
+- MapReduce Explained Simply
+- CAP Theorem in Practice
+- A Complete Guide to useEffect
+- How Browsers Work
+- Why Redis Is Fast
+- What Programmers Should Know About Memory
+
+## Develop
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) — redirects to `/about`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Add a post
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Edit `src/lib/blogs.ts`: add a `BlogPost` to a category in `BLOG_CATEGORIES`. It appears in the left index and at `/{slug}` automatically.

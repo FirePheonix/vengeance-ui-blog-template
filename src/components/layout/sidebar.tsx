@@ -1,0 +1,169 @@
+"use client";
+
+import React, { useState, useCallback, memo, startTransition } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { ChevronUp } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { BLOG_CATEGORIES, SIDEBAR_EXTRA } from "@/lib/blogs";
+
+type SidebarLinkItem = {
+  name: string;
+  href: string;
+  isNew?: boolean;
+  external?: boolean;
+};
+
+const SidebarItem = memo(function SidebarItem({
+  item,
+  isActive,
+  isHovered,
+  onHover,
+}: {
+  item: SidebarLinkItem;
+  isActive: boolean;
+  isHovered: boolean;
+  onHover: (href: string) => void;
+}) {
+  const router = useRouter();
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (item.external) return;
+      e.preventDefault();
+      startTransition(() => {
+        router.push(item.href);
+      });
+    },
+    [item.external, router, item.href]
+  );
+
+  return (
+    <div onMouseEnter={() => onHover(item.href)} className="relative">
+      {isActive && (
+        <div className="absolute inset-0 z-0 rounded-md bg-neutral-100 dark:bg-zinc-800/80" />
+      )}
+      {isHovered && (
+        <motion.div
+          layoutId="sidebar-hover-bg"
+          className="absolute inset-0 z-0 rounded-md bg-neutral-100 dark:bg-zinc-800/40"
+          transition={{ type: "spring", stiffness: 600, damping: 35 }}
+        />
+      )}
+      <Link
+        href={item.href}
+        onClick={item.external ? undefined : handleClick}
+        prefetch={item.external ? false : true}
+        target={item.external ? "_blank" : undefined}
+        rel={item.external ? "noopener noreferrer" : undefined}
+        className={cn(
+          "relative z-10 flex w-full items-center justify-between rounded-md px-3 py-1.5 text-sm transition-colors",
+          isActive
+            ? "font-medium text-neutral-900 dark:text-white"
+            : "text-neutral-500 hover:text-neutral-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+        )}
+      >
+        <span className="truncate">{item.name}</span>
+        {item.isNew && (
+          <span className="ml-2 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium leading-none text-emerald-500 dark:text-emerald-400">
+            New
+          </span>
+        )}
+      </Link>
+    </div>
+  );
+});
+
+function SidebarSection({
+  name,
+  icon: Icon,
+  items,
+  hoveredPath,
+  pathname,
+  onHover,
+}: {
+  name: string;
+  icon: LucideIcon;
+  items: SidebarLinkItem[];
+  hoveredPath: string | null;
+  pathname: string;
+  onHover: (href: string) => void;
+}) {
+  const isSectionActive = items.some((item) => {
+    if (item.external) return false;
+    return pathname === item.href;
+  });
+
+  return (
+    <div className="flex flex-col">
+      <div
+        className={cn(
+          "flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-sm font-medium transition-colors",
+          isSectionActive
+            ? "bg-neutral-100 text-neutral-900 dark:bg-zinc-800/80 dark:text-zinc-100"
+            : "text-neutral-600 dark:text-zinc-300"
+        )}
+      >
+        <Icon className="h-4 w-4" />
+        <span className="min-w-0 flex-1 truncate">{name}</span>
+        <ChevronUp className="h-3.5 w-3.5 text-neutral-400 dark:text-zinc-500" />
+      </div>
+
+      <div className="mt-1 ml-4 flex flex-col space-y-0.5 border-l border-neutral-200 pl-2 dark:border-[#222]/80">
+        {items.map((item) => (
+          <SidebarItem
+            key={item.href}
+            item={item}
+            isActive={!item.external && pathname === item.href}
+            isHovered={hoveredPath === item.href}
+            onHover={onHover}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function Sidebar() {
+  const pathname = usePathname();
+  const [hoveredPath, setHoveredPath] = useState<string | null>(null);
+
+  const handleHover = useCallback((href: string) => {
+    setHoveredPath(href);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setHoveredPath(null);
+  }, []);
+
+  return (
+    <div className="w-full space-y-6 pb-8" onMouseLeave={handleMouseLeave}>
+      <SidebarSection
+        name={SIDEBAR_EXTRA.name}
+        icon={SIDEBAR_EXTRA.icon}
+        items={SIDEBAR_EXTRA.items}
+        hoveredPath={hoveredPath}
+        pathname={pathname}
+        onHover={handleHover}
+      />
+
+      {BLOG_CATEGORIES.map((category) => (
+        <SidebarSection
+          key={category.name}
+          name={category.name}
+          icon={category.icon}
+          items={category.items.map((post) => ({
+            name: post.title,
+            href: `/${post.slug}`,
+            isNew: post.isNew,
+          }))}
+          hoveredPath={hoveredPath}
+          pathname={pathname}
+          onHover={handleHover}
+        />
+      ))}
+    </div>
+  );
+}
