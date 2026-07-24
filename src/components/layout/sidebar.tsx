@@ -8,7 +8,7 @@ import { ChevronUp } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BlogCategory } from "@/lib/blog-types";
-import { Boxes, BookOpen, Compass, Layers, CircuitBoard } from "lucide-react";
+import { BookOpen, Compass, Layers, CircuitBoard } from "lucide-react";
 
 type SidebarLinkItem = {
   name: string;
@@ -186,24 +186,6 @@ export function Sidebar({ categories }: { categories: BlogCategory[] }) {
 
   return (
     <div className="w-full pb-8" onMouseLeave={handleMouseLeave}>
-      <SidebarSection
-        id="sidebar-extra"
-        name="Template"
-        icon={Boxes}
-        items={[
-          {
-            name: "Vengeance UI docs shell",
-            href: "https://www.vengenceui.com/docs",
-            external: true,
-          },
-        ]}
-        hoveredPath={hoveredPath}
-        pathname={pathname}
-        onHover={handleHover}
-        isCollapsed={collapsedSections.has("sidebar-extra")}
-        onToggle={handleToggleSection}
-      />
-
       {categories.map((category, index) => (
         <SidebarSection
           id={category.name}
@@ -222,6 +204,11 @@ export function Sidebar({ categories }: { categories: BlogCategory[] }) {
           onToggle={handleToggleSection}
         />
       ))}
+      {categories.length === 0 ? (
+        <p className="px-2 text-sm text-neutral-500 dark:text-zinc-400">
+          No blog files found in content/blog.
+        </p>
+      ) : null}
     </div>
   );
 }
