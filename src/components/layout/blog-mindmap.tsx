@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Expand, X } from "lucide-react";
 import { useTheme } from "next-themes";
+import type { ForceGraphMethods } from "react-force-graph-2d";
 import { Button } from "@/components/ui/button";
 import { useIsMounted } from "@/hooks/use-is-mounted";
 import type { BlogLink } from "@/lib/blog-types";
@@ -31,17 +32,6 @@ type GraphNode = MindMapNode & {
   fy?: number;
   x?: number;
   y?: number;
-};
-
-type ForceGraphRef = {
-  d3Force: (forceName: string) =>
-    | {
-        distance: (
-          distanceAccessor: (link: { source: { id?: string } }) => number,
-        ) => void;
-      }
-    | undefined;
-  d3ReheatSimulation: () => void;
 };
 
 export function BlogMindmap({
@@ -180,7 +170,7 @@ function MindMapCanvas({
   onNodeClick: (node: object) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const graphRef = useRef<ForceGraphRef | null>(null);
+  const graphRef = useRef<ForceGraphMethods | undefined>(undefined);
   const [size, setSize] = useState({ height: 0, width: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [zoomK, setZoomK] = useState(1);
@@ -219,7 +209,8 @@ function MindMapCanvas({
   }, []);
 
   useEffect(() => {
-    const linkForce = graphRef.current?.d3Force?.("link");
+    const graph = graphRef.current;
+    const linkForce = graph?.d3Force?.("link");
     if (!linkForce) return;
 
     const zoomFactor = Math.min(1.9, Math.max(0.75, Math.pow(zoomK, 0.45)));
@@ -228,7 +219,7 @@ function MindMapCanvas({
       if (sourceId === "root") return 95 * zoomFactor;
       return 72 * zoomFactor;
     });
-    graphRef.current.d3ReheatSimulation();
+    graph?.d3ReheatSimulation();
   }, [zoomK]);
 
   return (
