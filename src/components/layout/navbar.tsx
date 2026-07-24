@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { BlogCommandSearch } from "@/components/layout/blog-command-search";
+import LogoIcon from "@/assets/logo/logo-icon";
 import { cn } from "@/lib/utils";
 import { ALL_POSTS, BLOG_CATEGORIES } from "@/lib/blogs";
 
@@ -25,10 +26,8 @@ export function Navbar() {
     <header className="sticky top-0 isolate z-[200] border-b border-neutral-200 bg-background/95 dark:border-[#222] dark:bg-[#050608]/95">
       <div className="w-full px-4 md:px-8">
         <div className="flex items-center justify-between py-3 lg:py-4">
-          <Link href="/about" className="flex w-fit items-center gap-2" prefetch>
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground text-xs font-bold text-background">
-              V
-            </span>
+          <Link href="/about" className="flex w-fit items-center gap-3" prefetch>
+            <LogoIcon className="w-6 rotate-180 text-foreground" />
             <span className="font-[family-name:var(--font-orbitron)] text-xl font-bold tracking-tight">
               Vengeance Blog
             </span>
