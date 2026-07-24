@@ -32,7 +32,7 @@ Route:
 /about/about-template
 ```
 
-## Frontmatter fields
+### Frontmatter fields
 
 Use this frontmatter schema:
 
@@ -50,15 +50,15 @@ isNew: true          # optional
 
 ## Rich markdown
 
-Image:
+### Image:
 
 ![Vengeance preview](/vengeance-image.png)
 
-Video:
+### Video:
 
 <video controls src="/vengeance-demo.mp4"></video>
 
-### Mermaid diagram
+## Mermaid diagram
 
 ```mermaid
 graph TD
