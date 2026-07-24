@@ -36,9 +36,9 @@ export function ThemeToggle() {
         onClick={() => setOpen((value) => !value)}
         variant="ghost"
         aria-label="Toggle theme"
-        className="size-8 rounded-full"
+        className="size-8 rounded-full text-neutral-700 hover:text-neutral-900 dark:text-zinc-200 dark:hover:text-white"
       >
-        <ActiveIcon className="size-[18px]" />
+        <ActiveIcon className="size-[18px] stroke-[2.1]" />
       </Button>
 
       {open ? (

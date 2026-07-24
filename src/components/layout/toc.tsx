@@ -89,8 +89,8 @@ function TOCItem({ item, active }: { item: TOCItemDef; active: boolean }) {
         className={cn(
           "flex h-full cursor-pointer items-center truncate text-[13px] font-medium leading-none transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
           active
-            ? "text-primary"
-            : "text-muted-foreground/70 hover:text-foreground"
+            ? "text-foreground"
+            : "text-neutral-500 hover:text-neutral-700 dark:text-zinc-500 dark:hover:text-zinc-300"
         )}
         style={{ paddingInlineStart: getItemOffset(item.depth) }}
         onClick={handleClick}
@@ -341,7 +341,7 @@ export function TableOfContents({ items }: { items: TOCItemDef[] }) {
             {items.map((item, idx) => (
               <TOCItem
                 key={item.id}
-                active={idx >= activeStartIndex && idx <= activeIndex}
+                active={idx === activeIndex}
                 item={item}
               />
             ))}
