@@ -60,6 +60,8 @@ export function BlogPostView({
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw]}
+          disallowedElements={["script"]}
+          unwrapDisallowed
           components={{
             h2: ({ children }) => {
               const heading = headings[headingIndex++];
@@ -143,6 +145,7 @@ export function BlogPostView({
                 {children}
               </video>
             ),
+            script: () => null,
             a: ({ href, children }) => {
               const isVideoLink =
                 typeof href === "string" &&
