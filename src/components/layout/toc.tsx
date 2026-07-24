@@ -306,8 +306,17 @@ export function TableOfContents({
   blogLinks?: TOCBlogLink[];
   activeBlogHref?: string;
 }) {
+  const usingBlogRail = blogLinks.length > 0;
   const [activeIndex, setActiveIndex] = useState(0);
-  const computed = useMemo(() => buildTocPath(items), [items]);
+  const computed = useMemo(
+    () =>
+      buildTocPath(
+        usingBlogRail
+          ? blogLinks.map((post) => ({ id: post.href, title: post.title, depth: 2 }))
+          : items
+      ),
+    [blogLinks, items, usingBlogRail]
+  );
   const blogRailItems = useMemo<TOCItemDef[]>(
     () =>
       blogLinks.map((post) => ({
@@ -317,16 +326,19 @@ export function TableOfContents({
       })),
     [blogLinks]
   );
-  const computedBlogs = useMemo(() => buildTocPath(blogRailItems), [blogRailItems]);
   const activeBlogIndex = Math.max(
     0,
     blogLinks.findIndex((post) => post.href === activeBlogHref)
   );
-  const activeStartIndex = getActiveStartIndex(items, activeIndex);
+  const activeStartIndex = getActiveStartIndex(
+    usingBlogRail ? blogRailItems : items,
+    usingBlogRail ? activeBlogIndex : activeIndex
+  );
   const rafRef = useRef<number | null>(null);
   const lastIndexRef = useRef(0);
 
   const handleScroll = useCallback(() => {
+    if (usingBlogRail) return;
     if (
       window.innerHeight + Math.round(window.scrollY) >=
       document.body.offsetHeight - 50
@@ -351,9 +363,10 @@ export function TableOfContents({
       lastIndexRef.current = currentIndex;
       setActiveIndex(currentIndex);
     }
-  }, [items]);
+  }, [items, usingBlogRail]);
 
   useEffect(() => {
+    if (usingBlogRail) return;
     let ticking = false;
     const onScroll = () => {
       if (ticking) return;
@@ -371,9 +384,10 @@ export function TableOfContents({
       window.removeEventListener("scroll", onScroll);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [handleScroll]);
+  }, [handleScroll, usingBlogRail]);
 
-  if (items.length === 0) return null;
+  if (!usingBlogRail && items.length === 0) return null;
+  if (usingBlogRail && blogLinks.length === 0) return null;
 
   return (
     <aside className="sticky top-20 hidden h-[calc(100vh-5rem)] overflow-y-auto py-6 pl-4 font-sans xl:block">
@@ -387,45 +401,25 @@ export function TableOfContents({
 
         <div className="relative ml-2">
           <ActiveTocPath
-            activeEndIndex={activeIndex}
+            activeEndIndex={usingBlogRail ? activeBlogIndex : activeIndex}
             activeStartIndex={activeStartIndex}
             computed={computed}
           />
           <ul className="relative z-0 flex w-full flex-col">
-            {items.map((item, idx) => (
-              <TOCItem
-                key={item.id}
-                active={idx === activeIndex}
-                item={item}
-              />
-            ))}
-          </ul>
-        </div>
-
-        {blogLinks.length > 0 ? (
-          <div className="space-y-3">
-            <div className="px-1 text-[11px] font-semibold uppercase tracking-normal text-muted-foreground">
-              Blog map
-            </div>
-            <div className="relative ml-2">
-              <ActiveTocPath
-                activeEndIndex={activeBlogIndex}
-                activeStartIndex={activeBlogIndex}
-                computed={computedBlogs}
-              />
-              <ul className="relative z-0 flex w-full flex-col">
-                {blogLinks.map((post) => (
+            {usingBlogRail
+              ? blogLinks.map((post, idx) => (
                   <BlogRailItem
                     key={post.href}
-                    active={post.href === activeBlogHref}
+                    active={idx === activeBlogIndex}
                     href={post.href}
                     title={post.title}
                   />
+                ))
+              : items.map((item, idx) => (
+                  <TOCItem key={item.id} active={idx === activeIndex} item={item} />
                 ))}
-              </ul>
-            </div>
-          </div>
-        ) : null}
+          </ul>
+        </div>
       </div>
     </aside>
   );
