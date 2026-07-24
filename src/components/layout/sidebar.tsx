@@ -125,12 +125,12 @@ function SidebarSection({
         )}
       >
         {iconFailed ? (
-          <Icon className="h-4 w-4" />
+          <Icon className="h-5 w-5" />
         ) : (
           <img
             src={iconSrc}
             alt={`${name} icon`}
-            className="h-4 w-4 object-contain"
+            className="h-5 w-5 object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
             onError={() => setIconFailed(true)}
           />
         )}
@@ -200,10 +200,10 @@ export function Sidebar({ categories }: { categories: BlogCategory[] }) {
     <div className="w-full pb-8" onMouseLeave={handleMouseLeave}>
       {categories.map((category, index) => (
         <SidebarSection
-          id={category.name}
-          key={category.name}
+          id={category.slug}
+          key={category.slug}
           name={category.name}
-          iconSrc={`/${category.name.toLowerCase()}/${category.name.toLowerCase()}.svg`}
+          iconSrc={`/${category.slug}/${category.slug}.svg`}
           icon={[Compass, BookOpen, Layers, CircuitBoard][index % 4]}
           items={category.items.map((post) => ({
             name: post.title,
@@ -213,7 +213,7 @@ export function Sidebar({ categories }: { categories: BlogCategory[] }) {
           hoveredPath={hoveredPath}
           pathname={pathname}
           onHover={handleHover}
-          isCollapsed={collapsedSections.has(category.name)}
+          isCollapsed={collapsedSections.has(category.slug)}
           onToggle={handleToggleSection}
         />
       ))}

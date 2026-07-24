@@ -1,11 +1,12 @@
-<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
-  <path d="M10 4V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-  <path d="M10 14V16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-  <path d="M4 10H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-  <path d="M14 10H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-  <path d="M5.76 5.76L7.17 7.17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-  <path d="M12.83 12.83L14.24 14.24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-  <path d="M14.24 5.76L12.83 7.17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-  <path d="M7.17 12.83L5.76 14.24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4" y="4" width="16" height="16" rx="2" stroke="black" stroke-width="1.8"/>
+  <path d="M9 4V7" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M15 4V7" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M9 20V17" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M15 20V17" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M20 9H17" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M20 15H17" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M4 9H7" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M4 15H7" stroke="black" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M9 9H15V15H9V9Z" stroke="black" stroke-width="1.8"/>
 </svg>

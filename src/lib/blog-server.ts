@@ -153,10 +153,15 @@ export function getPostBySegments(segments: string[]) {
 export function getBlogCategories(posts: BlogPost[]): BlogCategory[] {
   const byCategory = new Map<string, BlogCategory>();
   for (const post of posts) {
-    if (!byCategory.has(post.category)) {
-      byCategory.set(post.category, { name: post.category, items: [] });
+    const categorySlug = post.segments[0]?.toLowerCase() ?? "general";
+    if (!byCategory.has(categorySlug)) {
+      byCategory.set(categorySlug, {
+        slug: categorySlug,
+        name: titleCase(categorySlug),
+        items: [],
+      });
     }
-    byCategory.get(post.category)?.items.push({
+    byCategory.get(categorySlug)?.items.push({
       title: post.title,
       href: post.href,
       isNew: post.isNew,
@@ -169,8 +174,8 @@ export function getBlogCategories(posts: BlogPost[]): BlogCategory[] {
       items: category.items.sort((a, b) => a.href.localeCompare(b.href)),
     }))
     .sort((a, b) => {
-      if (a.name.toLowerCase() === "about") return -1;
-      if (b.name.toLowerCase() === "about") return 1;
+      if (a.slug === "about") return -1;
+      if (b.slug === "about") return 1;
       return a.name.localeCompare(b.name);
     });
 }

@@ -27,6 +27,7 @@ export type BlogNavItem = {
 };
 
 export type BlogCategory = {
+  slug: string;
   name: string;
   items: BlogNavItem[];
 };
