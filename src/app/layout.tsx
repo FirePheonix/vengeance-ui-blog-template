@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Orbitron } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
-import { getAllPosts, getBlogCategories, getBlogLinks, getDefaultPostPath } from "@/lib/blog-server";
+import { getAllPosts, getBlogLinks, getDefaultPostPath } from "@/lib/blog-server";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,7 +35,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const posts = getAllPosts();
-  const categories = getBlogCategories(posts);
   const links = getBlogLinks(posts);
   const homeHref = getDefaultPostPath();
 
@@ -51,7 +50,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar categories={categories} links={links} homeHref={homeHref} />
+          <Navbar links={links} homeHref={homeHref} />
           {children}
         </ThemeProvider>
       </body>

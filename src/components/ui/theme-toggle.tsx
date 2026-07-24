@@ -6,10 +6,15 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
+  const [mounted, setMounted] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const currentTheme = theme ?? "system";
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     const onPointerDown = (event: MouseEvent) => {
@@ -23,12 +28,13 @@ export function ThemeToggle() {
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, []);
 
-  const ActiveIcon =
-    currentTheme === "system"
-      ? Laptop
-      : resolvedTheme === "dark"
-        ? SunDim
-        : MoonStar;
+  const activeMode =
+    !mounted || currentTheme === "system"
+      ? resolvedTheme === "dark"
+        ? "dark"
+        : "light"
+      : currentTheme;
+  const ActiveIcon = activeMode === "dark" ? MoonStar : SunDim;
 
   return (
     <div ref={wrapperRef} className="relative">
@@ -36,9 +42,9 @@ export function ThemeToggle() {
         onClick={() => setOpen((value) => !value)}
         variant="ghost"
         aria-label="Toggle theme"
-        className="size-8 rounded-full text-neutral-700 hover:text-neutral-900 dark:text-zinc-200 dark:hover:text-white"
+        className="size-8 rounded-full border border-neutral-300/80 bg-background text-foreground shadow-sm hover:text-foreground dark:border-zinc-700"
       >
-        <ActiveIcon className="size-[18px] stroke-[2.1]" />
+        <ActiveIcon className="h-[18px] w-[18px]" strokeWidth={2.3} />
       </Button>
 
       {open ? (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { useTheme } from "next-themes";
 
 type MermaidDiagramProps = {
   chart: string;
@@ -17,6 +18,8 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
   const [svg, setSvg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const chartId = useId().replace(/:/g, "");
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   useEffect(() => {
     let cancelled = false;
@@ -28,7 +31,16 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
         mermaid.initialize({
           securityLevel: "loose",
           startOnLoad: false,
-          theme: "default",
+          theme: "base",
+          darkMode: isDark,
+          themeVariables: {
+            background: isDark ? "#09090b" : "#ffffff",
+            primaryColor: isDark ? "#111827" : "#f8fafc",
+            primaryTextColor: isDark ? "#e5e7eb" : "#111827",
+            primaryBorderColor: isDark ? "#4b5563" : "#374151",
+            lineColor: isDark ? "#9ca3af" : "#1f2937",
+            tertiaryColor: isDark ? "#0f172a" : "#f3f4f6",
+          },
         });
 
         const result = await mermaid.render(`mermaid-${chartId}`, chart);
@@ -50,7 +62,7 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
     return () => {
       cancelled = true;
     };
-  }, [chart, chartId]);
+  }, [chart, chartId, isDark]);
 
   if (error) {
     return (
@@ -70,7 +82,7 @@ export function MermaidDiagram({ chart }: MermaidDiagramProps) {
 
   return (
     <div
-      className="overflow-x-auto rounded-md border border-neutral-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+      className="overflow-x-auto rounded-md border border-neutral-300 bg-white p-4 shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-900 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]"
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );

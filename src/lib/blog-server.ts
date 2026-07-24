@@ -150,10 +150,16 @@ export function getBlogCategories(posts: BlogPost[]): BlogCategory[] {
     });
   }
 
-  return [...byCategory.values()].map((category) => ({
-    ...category,
-    items: category.items.sort((a, b) => a.href.localeCompare(b.href)),
-  }));
+  return [...byCategory.values()]
+    .map((category) => ({
+      ...category,
+      items: category.items.sort((a, b) => a.href.localeCompare(b.href)),
+    }))
+    .sort((a, b) => {
+      if (a.name.toLowerCase() === "about") return -1;
+      if (b.name.toLowerCase() === "about") return 1;
+      return a.name.localeCompare(b.name);
+    });
 }
 
 export function getBlogLinks(posts: BlogPost[]): BlogLink[] {
@@ -179,7 +185,7 @@ export function getAdjacentPosts(slug: string): {
 
 export function getDefaultPostPath() {
   const posts = getAllPosts();
-  const preferred = posts.find((post) => post.segments[0] === "getting-started");
+  const preferred = posts.find((post) => post.segments[0] === "about");
   const first = preferred ?? posts[0];
   return first?.href ?? "/";
 }

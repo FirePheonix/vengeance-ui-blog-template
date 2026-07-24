@@ -1,10 +1,14 @@
 ---
-title: "About This Template"
-description: "Folder-routed markdown blog template with TOC + mind web sync."
+title: "About"
+description: "This page can be your personal About page, with folder-routed markdown."
 author: "Vengeance Blog"
 inspiredBy: "Vengeance UI docs layout"
 date: "2026-07-24"
 ---
+
+## This can be your About
+
+Use this page as your own About section. Replace this text with your bio, work summary, stack, and links.
 
 ## What you get
 
@@ -19,13 +23,13 @@ This template reads markdown files from `content/blog/**.md` and automatically w
 File:
 
 ```txt
-content/blog/getting-started/about-template.md
+content/blog/about/about-template.md
 ```
 
 Route:
 
 ```txt
-/getting-started/about-template
+/about/about-template
 ```
 
 ## Frontmatter fields
@@ -63,4 +67,13 @@ graph TD
   B --> D[Mind web title]
   C --> E[Right rail]
   D --> E
+```
+
+### Flow diagram sample
+
+```mermaid
+flowchart LR
+  A[Write markdown] --> B[Save in content/blog/about]
+  B --> C[Auto route + sidebar]
+  C --> D[TOC + mind web]
 ```

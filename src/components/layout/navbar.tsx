@@ -8,15 +8,13 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { BlogCommandSearch } from "@/components/layout/blog-command-search";
 import LogoIcon from "@/assets/logo/logo-icon";
-import type { BlogCategory, BlogLink } from "@/lib/blog-types";
+import type { BlogLink } from "@/lib/blog-types";
 import { cn } from "@/lib/utils";
 
 export function Navbar({
-  categories,
   links,
   homeHref,
 }: {
-  categories: BlogCategory[];
   links: BlogLink[];
   homeHref: string;
 }) {
@@ -29,6 +27,30 @@ export function Navbar({
     const match = links.find((post) => pathname === post.href);
     return match?.href;
   }, [links, pathname]);
+  const mobileSections = useMemo(() => {
+    const map = new Map<string, BlogLink[]>();
+    for (const link of links) {
+      if (!map.has(link.category)) {
+        map.set(link.category, []);
+      }
+      map.get(link.category)?.push(link);
+    }
+    return [...map.entries()].map(([name, items]) => ({ name, items }));
+  }, [links]);
+  const aboutHref = useMemo(
+    () =>
+      links.find((post) => post.href.startsWith("/about/"))?.href ?? homeHref,
+    [homeHref, links]
+  );
+  const portfolioHref = useMemo(
+    () =>
+      links.find(
+        (post) =>
+          post.href.includes("/portfolio") ||
+          post.title.toLowerCase().includes("portfolio")
+      )?.href ?? homeHref,
+    [homeHref, links]
+  );
 
   return (
     <header className="sticky top-0 isolate z-[200] border-b border-neutral-200 bg-background/95 dark:border-[#222] dark:bg-[#050608]/95">
@@ -44,22 +66,21 @@ export function Navbar({
           <div className="hidden items-center gap-3 sm:flex">
             <BlogCommandSearch links={links} />
             <nav className="flex items-center gap-1">
-              {categories.slice(0, 3).map((category) => {
-                const first = category.items[0];
-                const active = category.items.some((post) => post.href === activeSlug);
-                return (
-                  <Link
-                    key={category.name}
-                    href={first.href}
-                    className={cn(
-                      "rounded-full px-3 py-1.5 text-sm text-foreground/75 transition-colors hover:text-foreground",
-                      active && "text-foreground"
-                    )}
-                  >
-                    {category.name}
-                  </Link>
-                );
-              })}
+              {[
+                { href: portfolioHref, label: "Portfolio" },
+                { href: aboutHref, label: "About" },
+              ].map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={cn(
+                    "rounded-full px-3 py-1.5 text-sm text-foreground/75 transition-colors hover:text-foreground",
+                    pathname === item.href && "text-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </nav>
             <ThemeToggle />
           </div>
@@ -96,7 +117,7 @@ export function Navbar({
             </Button>
           </div>
           <div className="max-h-[calc(100vh-3.5rem)] space-y-6 overflow-y-auto px-4 py-6">
-            {categories.map((category) => (
+            {mobileSections.map((category) => (
               <div key={category.name} className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   {category.name}
