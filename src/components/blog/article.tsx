@@ -24,7 +24,9 @@ export function BlogHeader({
       <h1 className="text-4xl font-bold tracking-tight text-neutral-950 dark:text-white">
         {title}
       </h1>
-      <p className="text-lg text-neutral-500 dark:text-zinc-400">{description}</p>
+      <p className="text-lg text-neutral-500 dark:text-zinc-400">
+        {description}
+      </p>
       {meta}
     </header>
   );

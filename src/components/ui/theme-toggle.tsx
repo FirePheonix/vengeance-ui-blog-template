@@ -4,17 +4,14 @@ import * as React from "react";
 import { Check, Laptop, MoonStar, SunDim } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { useIsMounted } from "@/hooks/use-is-mounted";
 
 export function ThemeToggle() {
-  const [mounted, setMounted] = React.useState(false);
+  const mounted = useIsMounted();
   const [open, setOpen] = React.useState(false);
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const currentTheme = theme ?? "system";
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   React.useEffect(() => {
     const onPointerDown = (event: MouseEvent) => {

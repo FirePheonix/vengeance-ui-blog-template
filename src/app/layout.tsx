@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Orbitron } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
-import { getAllPosts, getBlogLinks, getDefaultPostPath } from "@/lib/blog-server";
+import {
+  getAllPosts,
+  getBlogLinks,
+  getDefaultPostPath,
+} from "@/lib/blog-server";
 import "./globals.css";
 
 const geistSans = Geist({

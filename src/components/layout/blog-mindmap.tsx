@@ -2,17 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Expand, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { useIsMounted } from "@/hooks/use-is-mounted";
 import type { BlogLink } from "@/lib/blog-types";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
@@ -40,7 +35,7 @@ export function BlogMindmap({
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsMounted();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -78,12 +73,8 @@ export function BlogMindmap({
       setExpanded(false);
       router.push(`/${typed.slug}`);
     },
-    [router]
+    [router],
   );
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -150,7 +141,7 @@ export function BlogMindmap({
                 />
               </div>
             </div>,
-            document.body
+            document.body,
           )
         : null}
     </div>
@@ -202,15 +193,19 @@ function MindMapCanvas({
           nodeColor={(node) => {
             const typed = node as MindMapNode;
             if (typed.kind === "root") return isDark ? "#ffffff" : "#111827";
-            if (typed.slug === currentSlug) return isDark ? "#ffffff" : "#0b1220";
-            if (typed.kind === "category") return isDark ? "#9ca3af" : "#1f2937";
+            if (typed.slug === currentSlug)
+              return isDark ? "#ffffff" : "#0b1220";
+            if (typed.kind === "category")
+              return isDark ? "#9ca3af" : "#1f2937";
             return isDark ? "#737b89" : "#111827";
           }}
           linkColor={() =>
             isDark ? "rgba(120,126,139,0.45)" : "rgba(31,41,55,0.38)"
           }
           linkWidth={(link) =>
-            ((link as { source: { id?: string } }).source?.id === "root" ? 1.15 : 0.95)
+            (link as { source: { id?: string } }).source?.id === "root"
+              ? 1.15
+              : 0.95
           }
           onNodeClick={onNodeClick}
           nodeCanvasObject={(node, ctx, scale) => {
@@ -218,7 +213,11 @@ function MindMapCanvas({
             const x = typed.x ?? 0;
             const y = typed.y ?? 0;
             const radius =
-              typed.kind === "root" ? 4.4 : typed.slug === currentSlug ? 4.1 : 3.3;
+              typed.kind === "root"
+                ? 4.4
+                : typed.slug === currentSlug
+                  ? 4.1
+                  : 3.3;
             const fontSize = Math.max(8, 11 / scale);
             const isActive = typed.slug === currentSlug;
 

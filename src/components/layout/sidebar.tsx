@@ -38,7 +38,7 @@ const SidebarItem = memo(function SidebarItem({
         router.push(item.href);
       });
     },
-    [item.external, router, item.href]
+    [item.external, router, item.href],
   );
 
   return (
@@ -63,7 +63,7 @@ const SidebarItem = memo(function SidebarItem({
           "relative z-10 flex w-full items-center justify-between rounded-md px-3 py-1.5 text-sm transition-colors",
           isActive
             ? "font-medium text-neutral-900 dark:text-white"
-            : "text-neutral-500 hover:text-neutral-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+            : "text-neutral-500 hover:text-neutral-900 dark:text-zinc-400 dark:hover:text-zinc-200",
         )}
       >
         <span className="truncate">{item.name}</span>
@@ -111,7 +111,7 @@ function SidebarSection({
     <div
       className={cn(
         "flex flex-col transition-[margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
-        isExpanded ? "mb-4" : "mb-1.5"
+        isExpanded ? "mb-4" : "mb-1.5",
       )}
     >
       <button
@@ -121,7 +121,7 @@ function SidebarSection({
           "flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-sm font-medium transition-colors",
           isSectionActive
             ? "bg-neutral-100 text-neutral-900 dark:bg-zinc-800/80 dark:text-zinc-100"
-            : "text-neutral-600 hover:bg-neutral-100 dark:text-zinc-300 dark:hover:bg-zinc-800/40"
+            : "text-neutral-600 hover:bg-neutral-100 dark:text-zinc-300 dark:hover:bg-zinc-800/40",
         )}
       >
         {iconFailed ? (
@@ -138,7 +138,7 @@ function SidebarSection({
         <ChevronUp
           className={cn(
             "h-3.5 w-3.5 text-neutral-400 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] dark:text-zinc-500",
-            isExpanded ? "rotate-0" : "rotate-180"
+            isExpanded ? "rotate-0" : "rotate-180",
           )}
         />
       </button>
@@ -148,7 +148,7 @@ function SidebarSection({
           "mt-1 grid transition-[grid-template-rows,opacity,margin] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           isExpanded
             ? "grid-rows-[1fr] opacity-100"
-            : "pointer-events-none grid-rows-[0fr] opacity-0"
+            : "pointer-events-none grid-rows-[0fr] opacity-0",
         )}
       >
         <div className="ml-4 overflow-hidden border-l border-neutral-200 pl-2 dark:border-[#222]/80">
@@ -173,7 +173,7 @@ export function Sidebar({ categories }: { categories: BlogCategory[] }) {
   const pathname = usePathname();
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
-    () => new Set()
+    () => new Set(),
   );
 
   const handleHover = useCallback((href: string) => {

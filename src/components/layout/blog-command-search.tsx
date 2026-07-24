@@ -33,7 +33,9 @@ function highlightText(text: string, terms: string[]) {
   const parts = text.split(pattern);
 
   return parts.map((part, index) => {
-    const isMatch = terms.some((term) => part.toLowerCase() === term.toLowerCase());
+    const isMatch = terms.some(
+      (term) => part.toLowerCase() === term.toLowerCase(),
+    );
     if (!isMatch) return <span key={`${part}-${index}`}>{part}</span>;
     return (
       <mark
@@ -116,7 +118,7 @@ export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
             title.includes(term) ||
             description.includes(term) ||
             category.includes(term) ||
-            searchBody.includes(term)
+            searchBody.includes(term),
         );
         if (allTermsPresent) score += 10;
 
@@ -164,7 +166,7 @@ export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
         onClick={() => setOpen(true)}
         className={cn(
           "group flex h-9 w-[260px] items-center justify-between rounded-md border border-foreground/10 bg-foreground/[0.035] px-3 text-sm text-muted-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-colors hover:border-foreground/15 hover:bg-foreground/[0.055] hover:text-foreground",
-          "dark:border-white/10 dark:bg-white/[0.035] dark:hover:border-white/15 dark:hover:bg-white/[0.06]"
+          "dark:border-white/10 dark:bg-white/[0.035] dark:hover:border-white/15 dark:hover:bg-white/[0.06]",
         )}
       >
         <span className="flex min-w-0 items-center gap-2">
@@ -180,7 +182,7 @@ export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
         aria-hidden={!open}
         className={cn(
           "fixed inset-0 z-[260] flex items-start justify-center p-4 pt-[12vh] transition-opacity duration-200",
-          open ? "opacity-100" : "pointer-events-none opacity-0"
+          open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
         onClick={() => setOpen(false)}
       >
@@ -189,7 +191,7 @@ export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
           onClick={(event) => event.stopPropagation()}
           className={cn(
             "relative z-10 w-full max-w-2xl overflow-hidden rounded-xl border border-foreground/10 bg-background/95 shadow-2xl backdrop-blur-xl transition-all duration-200",
-            open ? "translate-y-0 scale-100" : "-translate-y-1 scale-[0.985]"
+            open ? "translate-y-0 scale-100" : "-translate-y-1 scale-[0.985]",
           )}
         >
           <div className="flex items-center gap-2 border-b border-foreground/10 px-3 py-3">
@@ -215,24 +217,24 @@ export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
                 const highlightedSnippet = highlightText(item.snippet, terms);
 
                 return (
-                <button
-                  key={item.href}
-                  type="button"
-                  onClick={() => openPost(item.href)}
-                  className="flex w-full items-start gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-foreground/[0.04]"
-                >
-                  <span className="mt-0.5 rounded-md border border-foreground/10 bg-foreground/[0.04] px-2 py-1 text-[11px] font-medium text-muted-foreground">
-                    {highlightText(item.category, terms)}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium text-foreground">
-                      {highlightedTitle}
+                  <button
+                    key={item.href}
+                    type="button"
+                    onClick={() => openPost(item.href)}
+                    className="flex w-full items-start gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-foreground/[0.04]"
+                  >
+                    <span className="mt-0.5 rounded-md border border-foreground/10 bg-foreground/[0.04] px-2 py-1 text-[11px] font-medium text-muted-foreground">
+                      {highlightText(item.category, terms)}
                     </span>
-                    <span className="block truncate text-xs text-muted-foreground">
-                      {highlightedSnippet}
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium text-foreground">
+                        {highlightedTitle}
+                      </span>
+                      <span className="block truncate text-xs text-muted-foreground">
+                        {highlightedSnippet}
+                      </span>
                     </span>
-                  </span>
-                </button>
+                  </button>
                 );
               })
             )}

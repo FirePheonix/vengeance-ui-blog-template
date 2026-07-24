@@ -24,7 +24,7 @@ export function CopyButton({
       type="button"
       className={cn(
         "relative z-10 flex h-7 w-7 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-50",
-        className
+        className,
       )}
       onClick={() => {
         navigator.clipboard.writeText(code);

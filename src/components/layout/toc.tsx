@@ -92,7 +92,7 @@ function TOCItem({ item, active }: { item: TOCItemDef; active: boolean }) {
           "flex h-full cursor-pointer items-center truncate text-[13px] font-medium leading-none transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
           active
             ? "text-foreground"
-            : "text-neutral-500 hover:text-neutral-700 dark:text-zinc-500 dark:hover:text-zinc-300"
+            : "text-neutral-500 hover:text-neutral-700 dark:text-zinc-500 dark:hover:text-zinc-300",
         )}
         style={{ paddingInlineStart: getItemOffset(item.depth) }}
         onClick={handleClick}
@@ -148,7 +148,8 @@ function ActiveTocPath({
     const nextTrackTop = start[0];
     const nextTrackBottom = end[1];
     const nextOffsetDistance = isUp ? startLength[0] : endLength[1];
-    const previousTrackTop = getCssNumber(element, "--track-top") ?? nextTrackTop;
+    const previousTrackTop =
+      getCssNumber(element, "--track-top") ?? nextTrackTop;
     const previousTrackBottom =
       getCssNumber(element, "--track-bottom") ?? nextTrackBottom;
     const previousOffsetDistance =
@@ -156,10 +157,13 @@ function ActiveTocPath({
     const distance = Math.max(
       Math.abs(previousTrackTop - nextTrackTop),
       Math.abs(previousTrackBottom - nextTrackBottom),
-      Math.abs(previousOffsetDistance - nextOffsetDistance)
+      Math.abs(previousOffsetDistance - nextOffsetDistance),
     );
 
-    element.style.setProperty("--toc-duration", `${getMotionDuration(distance)}ms`);
+    element.style.setProperty(
+      "--toc-duration",
+      `${getMotionDuration(distance)}ms`,
+    );
     element.style.setProperty("--track-top", `${nextTrackTop}px`);
     element.style.setProperty("--track-bottom", `${nextTrackBottom}px`);
     element.style.setProperty("--offset-distance", `${nextOffsetDistance}px`);
@@ -350,7 +354,11 @@ export function TableOfContents({
             />
             <ul className="relative z-0 flex w-full flex-col">
               {items.map((item, idx) => (
-                <TOCItem key={item.id} active={idx === activeIndex} item={item} />
+                <TOCItem
+                  key={item.id}
+                  active={idx === activeIndex}
+                  item={item}
+                />
               ))}
             </ul>
           </div>

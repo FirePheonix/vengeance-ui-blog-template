@@ -93,14 +93,21 @@ export function BlogPostView({
                 </h3>
               );
             },
-            p: ({ children }) => (
+            p: ({ children }) =>
               React.Children.toArray(children).some((child) => {
                 if (!React.isValidElement(child)) return false;
                 return (
                   typeof child.type === "string" &&
-                  ["div", "figure", "img", "video", "pre", "table", "ul", "ol"].includes(
-                    child.type
-                  )
+                  [
+                    "div",
+                    "figure",
+                    "img",
+                    "video",
+                    "pre",
+                    "table",
+                    "ul",
+                    "ol",
+                  ].includes(child.type)
                 );
               }) ? (
                 <div className="max-w-4xl">{children}</div>
@@ -108,8 +115,7 @@ export function BlogPostView({
                 <p className="max-w-4xl text-base leading-7 text-neutral-700 dark:text-zinc-300">
                   {children}
                 </p>
-              )
-            ),
+              ),
             blockquote: ({ children }) => (
               <blockquote className="max-w-4xl border-l-2 border-neutral-300 pl-4 text-base leading-7 text-neutral-600 italic dark:border-zinc-700 dark:text-zinc-400">
                 {children}

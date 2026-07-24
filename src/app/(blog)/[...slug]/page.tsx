@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogPostView } from "@/components/blog/post-view";
 import { TableOfContents } from "@/components/layout/toc";
-import { getAllPosts, getBlogLinks, getPostBySegments } from "@/lib/blog-server";
+import {
+  getAllPosts,
+  getBlogLinks,
+  getPostBySegments,
+} from "@/lib/blog-server";
 
 type PageProps = {
   params: Promise<{ slug: string[] }>;
@@ -34,7 +38,11 @@ export default async function BlogPostPage({ params }: PageProps) {
     <>
       <main className="relative min-w-0 py-8 md:pl-8 lg:pl-12 xl:pl-20">
         <div className="w-full min-w-0 max-w-6xl">
-          <BlogPostView post={post} markdown={post.markdown} headings={post.headings} />
+          <BlogPostView
+            post={post}
+            markdown={post.markdown}
+            headings={post.headings}
+          />
         </div>
       </main>
       <TableOfContents

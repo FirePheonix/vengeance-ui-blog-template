@@ -23,10 +23,6 @@ export function Navbar({
 
   const close = useCallback(() => setOpen(false), []);
 
-  const activeSlug = useMemo(() => {
-    const match = links.find((post) => pathname === post.href);
-    return match?.href;
-  }, [links, pathname]);
   const mobileSections = useMemo(() => {
     const map = new Map<string, BlogLink[]>();
     for (const link of links) {
@@ -40,15 +36,20 @@ export function Navbar({
   const aboutHref = useMemo(
     () =>
       links.find((post) => post.href.startsWith("/about/"))?.href ?? homeHref,
-    [homeHref, links]
+    [homeHref, links],
   );
-  const portfolioHref = "https://portfolio-v2-koxw.vercel.app/projects/vengenceui";
+  const portfolioHref =
+    "https://portfolio-v2-koxw.vercel.app/projects/vengenceui";
 
   return (
     <header className="sticky top-0 isolate z-[200] border-b border-neutral-200 bg-background/95 dark:border-[#222] dark:bg-[#050608]/95">
       <div className="w-full px-4 md:px-8">
         <div className="flex items-center justify-between py-3 lg:py-4">
-          <Link href={homeHref} className="flex w-fit items-center gap-3" prefetch>
+          <Link
+            href={homeHref}
+            className="flex w-fit items-center gap-3"
+            prefetch
+          >
             <LogoIcon className="w-6 rotate-180 text-foreground" />
             <span className="font-[family-name:var(--font-orbitron)] text-xl font-bold tracking-tight">
               Vengeance Blog
@@ -69,7 +70,7 @@ export function Navbar({
                   rel={item.external ? "noreferrer" : undefined}
                   className={cn(
                     "rounded-full px-3 py-1.5 text-sm text-foreground/75 transition-colors hover:text-foreground",
-                    pathname === item.href && "text-foreground"
+                    pathname === item.href && "text-foreground",
                   )}
                 >
                   {item.label}
@@ -126,7 +127,7 @@ export function Navbar({
                         "rounded-md px-3 py-2 text-sm",
                         pathname === post.href
                           ? "bg-neutral-100 font-medium dark:bg-zinc-800/80"
-                          : "text-neutral-600 dark:text-zinc-400"
+                          : "text-neutral-600 dark:text-zinc-400",
                       )}
                     >
                       {post.title}

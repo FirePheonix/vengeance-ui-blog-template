@@ -3,7 +3,12 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
-import type { BlogCategory, BlogLink, BlogPost, TOCHeading } from "@/lib/blog-types";
+import type {
+  BlogCategory,
+  BlogLink,
+  BlogPost,
+  TOCHeading,
+} from "@/lib/blog-types";
 
 const BLOG_ROOT = path.join(process.cwd(), "content", "blog");
 const NEW_DAYS = 21;
@@ -51,7 +56,8 @@ export function getMarkdownHeadings(markdown: string): TOCHeading[] {
     const hashes = match[1];
     const rawTitle = match[2].trim().replace(/\s+#+\s*$/, "");
     const depth: 2 | 3 = hashes.length === 3 ? 3 : 2;
-    const baseSlug = slugifyHeading(rawTitle) || `section-${headings.length + 1}`;
+    const baseSlug =
+      slugifyHeading(rawTitle) || `section-${headings.length + 1}`;
     headings.push({
       id: normalizeMarkdownSlug(baseSlug, usedSlugs),
       title: rawTitle,
@@ -64,7 +70,10 @@ export function getMarkdownHeadings(markdown: string): TOCHeading[] {
 }
 
 function getReadingTime(markdown: string) {
-  const words = markdown.replace(/```[\s\S]*?```/g, "").trim().split(/\s+/).length;
+  const words = markdown
+    .replace(/```[\s\S]*?```/g, "")
+    .trim()
+    .split(/\s+/).length;
   const minutes = Math.max(1, Math.round(words / 220));
   return `${minutes} min`;
 }
@@ -123,7 +132,9 @@ export function getAllPosts(): BlogPost[] {
       const data = parsed.data as Frontmatter;
       const markdown = parsed.content.trim();
       const headings = getMarkdownHeadings(markdown);
-      const fallbackTitle = titleCase(segments[segments.length - 1] ?? "Untitled");
+      const fallbackTitle = titleCase(
+        segments[segments.length - 1] ?? "Untitled",
+      );
       const date = data.date ?? "2026-01-01";
 
       return {
