@@ -3,13 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
-import { Github, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { BlogCommandSearch } from "@/components/layout/blog-command-search";
 import LogoIcon from "@/assets/logo/logo-icon";
 import type { BlogLink } from "@/lib/blog-types";
 import { cn } from "@/lib/utils";
+
+function GithubMark() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="size-[18px]"
+      fill="currentColor"
+    >
+      <path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.2.8-.6v-2.1c-3.3.7-4-1.4-4-1.4a3.1 3.1 0 0 0-1.3-1.7c-1.1-.8.1-.8.1-.8a2.5 2.5 0 0 1 1.8 1.2 2.6 2.6 0 0 0 3.5 1 2.6 2.6 0 0 1 .8-1.6c-2.7-.3-5.4-1.3-5.4-6a4.7 4.7 0 0 1 1.2-3.2 4.3 4.3 0 0 1 .1-3.2s1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2a4.3 4.3 0 0 1 .1 3.2 4.7 4.7 0 0 1 1.2 3.2c0 4.7-2.7 5.6-5.4 6a2.9 2.9 0 0 1 .8 2.2v3.2c0 .4.2.7.8.6A12 12 0 0 0 12 .5Z" />
+    </svg>
+  );
+}
 
 export function Navbar({
   links,
@@ -43,12 +56,12 @@ export function Navbar({
   const githubHref = "https://github.com/FirePheonix/vengeance-ui-blog-template";
 
   return (
-    <header className="sticky top-0 isolate z-[200] border-b border-neutral-200 bg-background/95 dark:border-[#222] dark:bg-[#050608]/95">
+    <header className="sticky top-0 isolate z-[200] border-b border-neutral-200/80 bg-background/90 backdrop-blur-xl dark:border-[#222]/90 dark:bg-[#050608]/88">
       <div className="w-full px-4 md:px-8">
-        <div className="flex items-center justify-between py-3 lg:py-4">
+        <div className="relative flex items-center justify-end py-3 lg:py-4">
           <Link
             href={homeHref}
-            className="flex w-fit items-center gap-3"
+            className="absolute left-1/2 z-10 flex w-fit -translate-x-1/2 items-center gap-2.5 rounded-full border border-neutral-300/70 bg-background/85 px-4 py-1.5 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-sm dark:border-zinc-700/80 dark:bg-zinc-950/75 dark:shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
             prefetch
           >
             <LogoIcon className="w-6 rotate-180 text-foreground" />
@@ -56,6 +69,8 @@ export function Navbar({
               Vengeance Blog
             </span>
           </Link>
+
+          <div className="hidden min-w-[260px] sm:block" />
 
           <div className="hidden items-center gap-3 sm:flex">
             <BlogCommandSearch links={links} />
@@ -85,7 +100,7 @@ export function Navbar({
               aria-label="GitHub repository"
               className="inline-flex size-8 items-center justify-center rounded-full border border-neutral-300/80 bg-background text-neutral-900 shadow-sm transition-colors hover:text-black dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:text-white"
             >
-              <Github className="size-[18px]" />
+              <GithubMark />
             </Link>
             <ThemeToggle />
           </div>
@@ -98,7 +113,7 @@ export function Navbar({
               aria-label="GitHub repository"
               className="inline-flex size-8 items-center justify-center rounded-full border border-neutral-300/80 bg-background text-neutral-900 shadow-sm transition-colors hover:text-black dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:text-white"
             >
-              <Github className="size-[18px]" />
+              <GithubMark />
             </Link>
             <ThemeToggle />
             <Button

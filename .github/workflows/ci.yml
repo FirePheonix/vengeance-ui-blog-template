@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  verify:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,8 +24,38 @@ jobs:
       - name: Lint + format check
         run: npm run test:lint
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm install
+
       - name: Unit tests
         run: npm test
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.1"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm install
 
       - name: Build
         run: npm run build
