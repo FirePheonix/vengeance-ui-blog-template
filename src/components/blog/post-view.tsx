@@ -67,7 +67,7 @@ export function BlogPostView({
                 href={`${post.href}/for-ai`}
                 className="inline-flex rounded-md border border-neutral-300 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:bg-zinc-800/70"
               >
-                AI Agent View
+                md for AI Agents
               </Link>
             </div>
           </div>

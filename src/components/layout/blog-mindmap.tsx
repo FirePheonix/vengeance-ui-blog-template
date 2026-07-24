@@ -33,6 +33,17 @@ type GraphNode = MindMapNode & {
   y?: number;
 };
 
+type ForceGraphRef = {
+  d3Force: (forceName: string) =>
+    | {
+        distance: (
+          distanceAccessor: (link: { source: { id?: string } }) => number,
+        ) => void;
+      }
+    | undefined;
+  d3ReheatSimulation: () => void;
+};
+
 export function BlogMindmap({
   currentSlug,
   links,
@@ -169,8 +180,25 @@ function MindMapCanvas({
   onNodeClick: (node: object) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const graphRef = useRef<ForceGraphRef | null>(null);
   const [size, setSize] = useState({ height: 0, width: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [zoomK, setZoomK] = useState(1);
+
+  const getNodeRadius = useCallback(
+    (node: GraphNode) => {
+      if (node.kind === "root") return 5.6;
+      if (node.kind === "category") return 4.8;
+      if (node.slug === currentSlug) return 4.1;
+      return 3.3;
+    },
+    [currentSlug],
+  );
+
+  const getLabelFontSize = useCallback((node: GraphNode, scale: number) => {
+    const baseSize = node.kind === "root" ? 14 : node.kind === "category" ? 12 : 11;
+    return Math.max(3, baseSize / Math.pow(scale, 0.92));
+  }, []);
 
   const setCursor = useCallback((cursor: string) => {
     if (!containerRef.current) return;
@@ -190,6 +218,19 @@ function MindMapCanvas({
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const linkForce = graphRef.current?.d3Force?.("link");
+    if (!linkForce) return;
+
+    const zoomFactor = Math.min(1.9, Math.max(0.75, Math.pow(zoomK, 0.45)));
+    linkForce.distance((link: { source: { id?: string } }) => {
+      const sourceId = link.source?.id;
+      if (sourceId === "root") return 95 * zoomFactor;
+      return 72 * zoomFactor;
+    });
+    graphRef.current.d3ReheatSimulation();
+  }, [zoomK]);
+
   return (
     <div
       ref={containerRef}
@@ -197,6 +238,7 @@ function MindMapCanvas({
     >
       {size.width > 0 && size.height > 0 ? (
         <ForceGraph2D
+          ref={graphRef}
           width={size.width}
           height={size.height}
           graphData={data}
@@ -207,6 +249,7 @@ function MindMapCanvas({
           enablePanInteraction
           showPointerCursor={(object) => Boolean(object)}
           nodeRelSize={5}
+          onZoom={({ k }) => setZoomK(k)}
           nodeColor={(node) => {
             const typed = node as MindMapNode;
             if (typed.kind === "root") return isDark ? "#ffffff" : "#111827";
@@ -232,18 +275,15 @@ function MindMapCanvas({
             const typed = node as GraphNode;
             const x = typed.x ?? 0;
             const y = typed.y ?? 0;
-            const radius =
-              typed.kind === "root" ? 12 : typed.slug === currentSlug ? 11 : 10;
+            const radius = getNodeRadius(typed) + 6 / Math.max(1, scale);
             ctx.fillStyle = color;
 
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
             ctx.fill();
 
-            if (typed.kind !== "post") return;
-
-            const fontSize = Math.max(8, 11 / scale);
-            ctx.font = `${fontSize}px Inter, system-ui, sans-serif`;
+            const fontSize = getLabelFontSize(typed, scale);
+            ctx.font = `${fontSize}px var(--font-geist-sans), system-ui, sans-serif`;
             const textWidth = ctx.measureText(typed.label).width;
             const boxHeight = fontSize + 6;
             const boxX = x + radius + 1;
@@ -270,13 +310,8 @@ function MindMapCanvas({
             const typed = node as GraphNode;
             const x = typed.x ?? 0;
             const y = typed.y ?? 0;
-            const radius =
-              typed.kind === "root"
-                ? 4.4
-                : typed.slug === currentSlug
-                  ? 4.1
-                  : 3.3;
-            const fontSize = Math.max(8, 11 / scale);
+            const radius = getNodeRadius(typed);
+            const fontSize = getLabelFontSize(typed, scale);
             const isActive = typed.slug === currentSlug;
 
             ctx.beginPath();
@@ -291,8 +326,17 @@ function MindMapCanvas({
                   : "rgba(31,41,55,0.94)";
             ctx.fill();
 
-            if (typed.kind !== "post") return;
-            ctx.font = `${fontSize}px Inter, system-ui, sans-serif`;
+            if (typed.kind === "root") {
+              ctx.beginPath();
+              ctx.arc(x, y, radius + 3.2, 0, 2 * Math.PI, false);
+              ctx.strokeStyle = isDark
+                ? "rgba(255,255,255,0.45)"
+                : "rgba(17,24,39,0.32)";
+              ctx.lineWidth = 1.2;
+              ctx.stroke();
+            }
+
+            ctx.font = `${fontSize}px var(--font-geist-sans), system-ui, sans-serif`;
             ctx.textAlign = "left";
             ctx.textBaseline = "middle";
             ctx.fillStyle = isActive
@@ -302,6 +346,17 @@ function MindMapCanvas({
               : isDark
                 ? "rgba(148,153,165,0.95)"
                 : "rgba(31,41,55,0.95)";
+            if (typed.kind === "category") {
+              ctx.fillStyle = isDark
+                ? "rgba(217,223,231,0.95)"
+                : "rgba(17,24,39,0.92)";
+            }
+            if (typed.kind === "root") {
+              ctx.fillStyle = isDark
+                ? "rgba(255,255,255,0.95)"
+                : "rgba(17,24,39,0.95)";
+            }
+
             ctx.fillText(typed.label, x + radius + 4, y);
           }}
         />
