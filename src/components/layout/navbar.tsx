@@ -57,12 +57,12 @@ export function Navbar({
     "https://github.com/FirePheonix/vengeance-ui-blog-template";
 
   return (
-    <header className="sticky top-0 isolate z-[200] border-b border-neutral-200/80 bg-background/90 backdrop-blur-xl dark:border-[#222]/90 dark:bg-[#050608]/88">
+    <header className="sticky top-0 isolate z-[200] border-b border-neutral-200 bg-background/95 dark:border-[#222] dark:bg-[#050608]/95">
       <div className="w-full px-4 md:px-8">
-        <div className="relative flex items-center justify-end py-3 lg:py-4">
+        <div className="flex items-center justify-between py-3 lg:py-4">
           <Link
             href={homeHref}
-            className="absolute left-1/2 z-10 flex w-fit -translate-x-1/2 items-center gap-2.5 rounded-full border border-neutral-300/70 bg-background/85 px-4 py-1.5 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-sm dark:border-zinc-700/80 dark:bg-zinc-950/75 dark:shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+            className="flex w-fit items-center gap-3"
             prefetch
           >
             <LogoIcon className="w-6 rotate-180 text-foreground" />
@@ -70,8 +70,6 @@ export function Navbar({
               Vengeance Blog
             </span>
           </Link>
-
-          <div className="hidden min-w-[260px] sm:block" />
 
           <div className="hidden items-center gap-3 sm:flex">
             <BlogCommandSearch links={links} />
