@@ -48,11 +48,11 @@ isNew: true          # optional
 
 Image:
 
-![Vercel mark](/vercel.svg)
+![Vengeancy preview](/vengeancy-image.png)
 
 Video:
 
-<video controls src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<video controls src="/vengeancy-demo.mp4"></video>
 
 ### Mermaid diagram
 

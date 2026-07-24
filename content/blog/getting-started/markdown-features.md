@@ -8,11 +8,11 @@ date: "2026-07-24"
 
 ## Image
 
-![Next logo](/next.svg)
+![Vengeancy preview](/vengeancy-image.png)
 
 ## Video
 
-<video controls src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+<video controls src="/vengeancy-demo.mp4"></video>
 
 ## Mermaid
 

@@ -132,7 +132,7 @@ export function BlogPostView({
                 src={src ?? ""}
                 alt={alt ?? ""}
                 loading="lazy"
-                className="w-full max-w-4xl rounded-md border border-neutral-200 object-cover dark:border-zinc-800"
+                className="w-full max-w-4xl rounded-md border border-neutral-300 bg-background object-cover p-1 shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]"
               />
             ),
             video: ({ src, children }) => (
@@ -140,7 +140,7 @@ export function BlogPostView({
                 controls
                 preload="metadata"
                 src={typeof src === "string" ? src : undefined}
-                className="w-full max-w-4xl rounded-md border border-neutral-200 bg-black dark:border-zinc-800"
+                className="w-full max-w-4xl rounded-md border border-neutral-300 bg-black p-1 shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]"
               >
                 {children}
               </video>
@@ -157,7 +157,7 @@ export function BlogPostView({
                     controls
                     preload="metadata"
                     src={href}
-                    className="w-full max-w-4xl rounded-md border border-neutral-200 bg-black dark:border-zinc-800"
+                    className="w-full max-w-4xl rounded-md border border-neutral-300 bg-black p-1 shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]"
                   />
                 );
               }
