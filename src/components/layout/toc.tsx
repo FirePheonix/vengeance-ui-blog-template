@@ -51,16 +51,17 @@ function buildTocPath(items: TOCItemDef[]): ComputedSVG {
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const x = getLineOffset(item.depth) + 0.5;
+    const wobble = (i % 2 === 0 ? 1 : -1) * (item.depth <= 2 ? 1.25 : 2.25);
     const top = i * rowHeight + rowInset;
     const bottom = (i + 1) * rowHeight - rowInset;
 
-    width = Math.max(x + 8, width);
+    width = Math.max(x + 11, width);
 
     if (i === 0) {
       d += ` M${x} ${top} L${x} ${bottom}`;
     } else {
       const [, upperBottom, upperX] = positions[i - 1];
-      d += ` C ${upperX} ${top - 4} ${x} ${upperBottom + 4} ${x} ${top} L${x} ${bottom}`;
+      d += ` C ${upperX + wobble} ${top - 5} ${x - wobble} ${upperBottom + 5} ${x} ${top} L${x} ${bottom}`;
     }
 
     positions.push([top, bottom, x]);
