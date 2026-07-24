@@ -98,3 +98,8 @@ They include examples for:
 - images
 - videos
 - mermaid blocks
+
+## Open source
+
+- License: [MIT](./LICENSE)
+- Contribution guide: [CONTRIBUTING.md](./CONTRIBUTING.md)
