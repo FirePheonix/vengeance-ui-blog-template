@@ -8,25 +8,33 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { BlogCommandSearch } from "@/components/layout/blog-command-search";
 import LogoIcon from "@/assets/logo/logo-icon";
+import type { BlogCategory, BlogLink } from "@/lib/blog-types";
 import { cn } from "@/lib/utils";
-import { ALL_POSTS, BLOG_CATEGORIES } from "@/lib/blogs";
 
-export function Navbar() {
+export function Navbar({
+  categories,
+  links,
+  homeHref,
+}: {
+  categories: BlogCategory[];
+  links: BlogLink[];
+  homeHref: string;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   const close = useCallback(() => setOpen(false), []);
 
   const activeSlug = useMemo(() => {
-    const match = ALL_POSTS.find((post) => pathname === `/${post.slug}`);
-    return match?.slug;
-  }, [pathname]);
+    const match = links.find((post) => pathname === post.href);
+    return match?.href;
+  }, [links, pathname]);
 
   return (
     <header className="sticky top-0 isolate z-[200] border-b border-neutral-200 bg-background/95 dark:border-[#222] dark:bg-[#050608]/95">
       <div className="w-full px-4 md:px-8">
         <div className="flex items-center justify-between py-3 lg:py-4">
-          <Link href="/about" className="flex w-fit items-center gap-3" prefetch>
+          <Link href={homeHref} className="flex w-fit items-center gap-3" prefetch>
             <LogoIcon className="w-6 rotate-180 text-foreground" />
             <span className="font-[family-name:var(--font-orbitron)] text-xl font-bold tracking-tight">
               Vengeance Blog
@@ -34,17 +42,15 @@ export function Navbar() {
           </Link>
 
           <div className="hidden items-center gap-3 sm:flex">
-            <BlogCommandSearch />
+            <BlogCommandSearch links={links} />
             <nav className="flex items-center gap-1">
-              {BLOG_CATEGORIES.slice(0, 3).map((category) => {
+              {categories.slice(0, 3).map((category) => {
                 const first = category.items[0];
-                const active = category.items.some(
-                  (post) => post.slug === activeSlug
-                );
+                const active = category.items.some((post) => post.href === activeSlug);
                 return (
                   <Link
                     key={category.name}
-                    href={`/${first.slug}`}
+                    href={first.href}
                     className={cn(
                       "rounded-full px-3 py-1.5 text-sm text-foreground/75 transition-colors hover:text-foreground",
                       active && "text-foreground"
@@ -90,7 +96,7 @@ export function Navbar() {
             </Button>
           </div>
           <div className="max-h-[calc(100vh-3.5rem)] space-y-6 overflow-y-auto px-4 py-6">
-            {BLOG_CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <div key={category.name} className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   {category.name}
@@ -98,12 +104,12 @@ export function Navbar() {
                 <div className="flex flex-col gap-1">
                   {category.items.map((post) => (
                     <Link
-                      key={post.slug}
-                      href={`/${post.slug}`}
+                      key={post.href}
+                      href={post.href}
                       onClick={close}
                       className={cn(
                         "rounded-md px-3 py-2 text-sm",
-                        pathname === `/${post.slug}`
+                        pathname === post.href
                           ? "bg-neutral-100 font-medium dark:bg-zinc-800/80"
                           : "text-neutral-600 dark:text-zinc-400"
                       )}

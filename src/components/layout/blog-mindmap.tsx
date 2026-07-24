@@ -13,7 +13,7 @@ import { createPortal } from "react-dom";
 import { Expand, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { BLOG_CATEGORIES } from "@/lib/blogs";
+import type { BlogLink } from "@/lib/blog-types";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
@@ -31,7 +31,13 @@ type MindMapLink = {
   target: string;
 };
 
-export function BlogMindmap({ currentSlug }: { currentSlug: string }) {
+export function BlogMindmap({
+  currentSlug,
+  links,
+}: {
+  currentSlug: string;
+  links: BlogLink[];
+}) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -40,27 +46,30 @@ export function BlogMindmap({ currentSlug }: { currentSlug: string }) {
 
   const data = useMemo(() => {
     const nodes: MindMapNode[] = [{ id: "root", label: "Blogs", kind: "root" }];
-    const links: MindMapLink[] = [];
+    const edges: MindMapLink[] = [];
+    const seenCategories = new Set<string>();
 
-    for (const category of BLOG_CATEGORIES) {
-      const categoryId = `category:${category.name}`;
-      nodes.push({ id: categoryId, label: category.name, kind: "category" });
-      links.push({ source: "root", target: categoryId });
-
-      for (const post of category.items) {
-        const postId = `post:${post.slug}`;
-        nodes.push({
-          id: postId,
-          label: post.title,
-          kind: "post",
-          slug: post.slug,
-        });
-        links.push({ source: categoryId, target: postId });
+    for (const post of links) {
+      const categoryId = `category:${post.category}`;
+      if (!seenCategories.has(categoryId)) {
+        seenCategories.add(categoryId);
+        nodes.push({ id: categoryId, label: post.category, kind: "category" });
+        edges.push({ source: "root", target: categoryId });
       }
+
+      const postSlug = post.href.replace(/^\//, "");
+      const postId = `post:${postSlug}`;
+      nodes.push({
+        id: postId,
+        label: post.title,
+        kind: "post",
+        slug: postSlug,
+      });
+      edges.push({ source: categoryId, target: postId });
     }
 
-    return { links, nodes };
-  }, []);
+    return { links: edges, nodes };
+  }, [links]);
 
   const onNodeClick = useCallback(
     (node: object) => {

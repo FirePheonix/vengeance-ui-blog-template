@@ -1,14 +1,18 @@
 import { Sidebar } from "@/components/layout/sidebar";
+import { getAllPosts, getBlogCategories } from "@/lib/blog-server";
 
 export default function BlogShellLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const posts = getAllPosts();
+  const categories = getBlogCategories(posts);
+
   return (
     <div className="w-full flex-1 px-4 md:grid md:grid-cols-[220px_24px_minmax(0,1fr)] md:gap-6 md:px-8 lg:grid-cols-[240px_24px_minmax(0,1fr)] lg:gap-8 xl:grid-cols-[240px_24px_minmax(0,1fr)_200px]">
       <aside className="fixed top-14 z-30 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 overflow-y-auto py-6 pr-4 md:sticky md:block">
-        <Sidebar />
+        <Sidebar categories={categories} />
       </aside>
 
       <div className="relative hidden h-[calc(100vh-3.5rem)] w-full opacity-60 md:sticky md:top-14 md:block">

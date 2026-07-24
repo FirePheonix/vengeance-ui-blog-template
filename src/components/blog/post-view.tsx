@@ -8,8 +8,8 @@ import {
   BlogHeader,
 } from "@/components/blog/article";
 import { MermaidDiagram } from "@/components/blog/mermaid-diagram";
-import type { BlogPost, TOCHeading } from "@/lib/blogs";
-import { getAdjacentPosts } from "@/lib/blogs";
+import type { BlogPost, TOCHeading } from "@/lib/blog-types";
+import { getAdjacentPosts } from "@/lib/blog-server";
 
 function flattenText(node: React.ReactNode): string {
   if (typeof node === "string" || typeof node === "number") {
@@ -179,7 +179,7 @@ export function BlogPostView({
       <nav className="flex max-w-4xl items-start justify-between gap-6 border-t border-neutral-200 pt-8 dark:border-zinc-800">
         {prev ? (
           <Link
-            href={`/${prev.slug}`}
+            href={prev.href}
             className="group max-w-[45%] space-y-1 text-left"
           >
             <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-zinc-500">
@@ -194,7 +194,7 @@ export function BlogPostView({
         )}
         {next ? (
           <Link
-            href={`/${next.slug}`}
+            href={next.href}
             className="group max-w-[45%] space-y-1 text-right"
           >
             <span className="text-xs uppercase tracking-wide text-neutral-500 dark:text-zinc-500">

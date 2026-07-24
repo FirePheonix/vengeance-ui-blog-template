@@ -2,26 +2,21 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogPostView } from "@/components/blog/post-view";
 import { TableOfContents } from "@/components/layout/toc";
-import {
-  ALL_POSTS,
-  getMarkdownHeadings,
-  getPost,
-  getPostMarkdown,
-} from "@/lib/blogs";
+import { getAllPosts, getBlogLinks, getPostBySegments } from "@/lib/blog-server";
 
 type PageProps = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string[] }>;
 };
 
 export function generateStaticParams() {
-  return ALL_POSTS.map((post) => ({ slug: post.slug }));
+  return getAllPosts().map((post) => ({ slug: post.segments }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = getPostBySegments(slug);
   if (!post) return {};
   return {
     title: post.title,
@@ -31,20 +26,22 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = getPostBySegments(slug);
   if (!post) notFound();
-
-  const markdown = getPostMarkdown(post);
-  const tocItems = getMarkdownHeadings(markdown);
+  const allPosts = getAllPosts();
 
   return (
     <>
       <main className="relative min-w-0 py-8 md:pl-8 lg:pl-12 xl:pl-20">
         <div className="w-full min-w-0 max-w-6xl">
-          <BlogPostView post={post} markdown={markdown} headings={tocItems} />
+          <BlogPostView post={post} markdown={post.markdown} headings={post.headings} />
         </div>
       </main>
-      <TableOfContents items={tocItems} currentSlug={post.slug} />
+      <TableOfContents
+        items={post.headings}
+        currentSlug={post.slug}
+        links={getBlogLinks(allPosts)}
+      />
     </>
   );
 }

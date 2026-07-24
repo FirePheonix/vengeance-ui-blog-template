@@ -3,7 +3,7 @@
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
-import { BLOG_CATEGORIES } from "@/lib/blogs";
+import type { BlogLink } from "@/lib/blog-types";
 import { cn } from "@/lib/utils";
 
 type SearchItem = {
@@ -13,21 +13,19 @@ type SearchItem = {
   title: string;
 };
 
-export function BlogCommandSearch() {
+export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
   const items = useMemo<SearchItem[]>(() => {
-    return BLOG_CATEGORIES.flatMap((category) =>
-      category.items.map((post) => ({
-        href: `/${post.slug}`,
-        category: category.name,
-        description: post.description,
-        title: post.title,
-      }))
-    );
-  }, []);
+    return links.map((post) => ({
+      href: post.href,
+      category: post.category,
+      description: "",
+      title: post.title,
+    }));
+  }, [links]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

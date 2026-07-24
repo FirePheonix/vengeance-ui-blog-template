@@ -7,7 +7,8 @@ import { motion } from "framer-motion";
 import { ChevronUp } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { BLOG_CATEGORIES, SIDEBAR_EXTRA } from "@/lib/blogs";
+import type { BlogCategory } from "@/lib/blog-types";
+import { Boxes, BookOpen, Compass, Layers, CircuitBoard } from "lucide-react";
 
 type SidebarLinkItem = {
   name: string;
@@ -156,7 +157,7 @@ function SidebarSection({
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ categories }: { categories: BlogCategory[] }) {
   const pathname = usePathname();
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
@@ -187,9 +188,15 @@ export function Sidebar() {
     <div className="w-full pb-8" onMouseLeave={handleMouseLeave}>
       <SidebarSection
         id="sidebar-extra"
-        name={SIDEBAR_EXTRA.name}
-        icon={SIDEBAR_EXTRA.icon}
-        items={SIDEBAR_EXTRA.items}
+        name="Template"
+        icon={Boxes}
+        items={[
+          {
+            name: "Vengeance UI docs shell",
+            href: "https://www.vengenceui.com/docs",
+            external: true,
+          },
+        ]}
         hoveredPath={hoveredPath}
         pathname={pathname}
         onHover={handleHover}
@@ -197,15 +204,15 @@ export function Sidebar() {
         onToggle={handleToggleSection}
       />
 
-      {BLOG_CATEGORIES.map((category) => (
+      {categories.map((category, index) => (
         <SidebarSection
           id={category.name}
           key={category.name}
           name={category.name}
-          icon={category.icon}
+          icon={[Compass, BookOpen, Layers, CircuitBoard][index % 4]}
           items={category.items.map((post) => ({
             name: post.title,
-            href: `/${post.slug}`,
+            href: post.href,
             isNew: post.isNew,
           }))}
           hoveredPath={hoveredPath}

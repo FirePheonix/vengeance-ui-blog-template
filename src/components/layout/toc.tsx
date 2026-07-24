@@ -10,6 +10,7 @@ import {
 } from "react";
 import { AlignLeft } from "lucide-react";
 import { BlogMindmap } from "@/components/layout/blog-mindmap";
+import type { BlogLink } from "@/lib/blog-types";
 import { cn } from "@/lib/utils";
 
 export interface TOCItemDef {
@@ -269,9 +270,11 @@ function getActiveStartIndex(items: TOCItemDef[], activeIndex: number) {
 export function TableOfContents({
   items,
   currentSlug,
+  links,
 }: {
   items: TOCItemDef[];
   currentSlug?: string;
+  links: BlogLink[];
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const computed = useMemo(() => buildTocPath(items), [items]);
@@ -353,7 +356,7 @@ export function TableOfContents({
           </div>
         </div>
 
-        <BlogMindmap currentSlug={currentSlug ?? ""} />
+        <BlogMindmap currentSlug={currentSlug ?? ""} links={links} />
       </div>
     </aside>
   );
