@@ -26,6 +26,13 @@ type MindMapLink = {
   target: string;
 };
 
+type GraphNode = MindMapNode & {
+  fx?: number;
+  fy?: number;
+  x?: number;
+  y?: number;
+};
+
 export function BlogMindmap({
   currentSlug,
   links,
@@ -162,6 +169,9 @@ function MindMapCanvas({
   onNodeClick: (node: object) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const graphRef = useRef<{
+    d3ReheatSimulation: () => void;
+  } | null>(null);
   const [size, setSize] = useState({ height: 0, width: 0 });
 
   useEffect(() => {
@@ -184,11 +194,14 @@ function MindMapCanvas({
     >
       {size.width > 0 && size.height > 0 ? (
         <ForceGraph2D
+          ref={graphRef}
           width={size.width}
           height={size.height}
           graphData={data}
           cooldownTicks={90}
           d3AlphaDecay={0.03}
+          enableNodeDrag
+          enablePanInteraction
           nodeRelSize={5}
           nodeColor={(node) => {
             const typed = node as MindMapNode;
@@ -207,9 +220,26 @@ function MindMapCanvas({
               ? 1.15
               : 0.95
           }
+          nodePointerAreaPaint={(node, color, ctx) => {
+            const typed = node as GraphNode;
+            const x = typed.x ?? 0;
+            const y = typed.y ?? 0;
+            const radius =
+              typed.kind === "root" ? 8 : typed.slug === currentSlug ? 7.5 : 6.5;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+            ctx.fill();
+          }}
+          onNodeDragEnd={(node) => {
+            const typed = node as GraphNode;
+            typed.fx = typed.x;
+            typed.fy = typed.y;
+            graphRef.current?.d3ReheatSimulation();
+          }}
           onNodeClick={onNodeClick}
           nodeCanvasObject={(node, ctx, scale) => {
-            const typed = node as MindMapNode & { x?: number; y?: number };
+            const typed = node as GraphNode;
             const x = typed.x ?? 0;
             const y = typed.y ?? 0;
             const radius =
