@@ -127,13 +127,15 @@ export function BlogPostView({
               return <BlogCodeBlock code={rawCode} title={language} />;
             },
             img: ({ src, alt }) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={src ?? ""}
-                alt={alt ?? ""}
-                loading="lazy"
-                className="w-full max-w-4xl rounded-md border border-neutral-300 bg-background object-cover p-1 shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]"
-              />
+              <div className="w-full max-w-4xl overflow-hidden rounded-md border border-neutral-300 bg-background shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={src ?? ""}
+                  alt={alt ?? ""}
+                  loading="lazy"
+                  className="block h-auto w-full object-contain"
+                />
+              </div>
             ),
             video: ({ src, children }) => (
               <div className="w-full max-w-4xl overflow-hidden rounded-md border border-neutral-300 bg-background shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]">
@@ -142,7 +144,7 @@ export function BlogPostView({
                   preload="metadata"
                   playsInline
                   src={typeof src === "string" ? src : undefined}
-                  className="block w-full bg-black"
+                  className="block h-auto w-full bg-black object-contain"
                 >
                   {children}
                 </video>
@@ -162,7 +164,7 @@ export function BlogPostView({
                       preload="metadata"
                       playsInline
                       src={href}
-                      className="block w-full bg-black"
+                      className="block h-auto w-full bg-black object-contain"
                     />
                   </div>
                 );
