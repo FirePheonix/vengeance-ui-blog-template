@@ -173,6 +173,12 @@ function MindMapCanvas({
     d3ReheatSimulation: () => void;
   } | null>(null);
   const [size, setSize] = useState({ height: 0, width: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+
+  const setCursor = useCallback((cursor: string) => {
+    if (!containerRef.current) return;
+    containerRef.current.style.cursor = cursor;
+  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -190,7 +196,7 @@ function MindMapCanvas({
   return (
     <div
       ref={containerRef}
-      className={`${className} w-full overflow-hidden rounded-md border border-neutral-200/70 bg-neutral-50/40 dark:border-zinc-800 dark:bg-zinc-900/20`}
+      className={`${className} w-full overflow-hidden rounded-md border border-neutral-200/70 bg-neutral-50/40 dark:border-zinc-800 dark:bg-zinc-900/20 ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
     >
       {size.width > 0 && size.height > 0 ? (
         <ForceGraph2D
@@ -220,23 +226,31 @@ function MindMapCanvas({
               ? 1.15
               : 0.95
           }
+          onNodeHover={(node) => {
+            if (isDragging) return;
+            setCursor(node ? "pointer" : "grab");
+          }}
           nodePointerAreaPaint={(node, color, ctx) => {
             const typed = node as GraphNode;
             const x = typed.x ?? 0;
             const y = typed.y ?? 0;
             const radius =
-              typed.kind === "root" ? 8 : typed.slug === currentSlug ? 7.5 : 6.5;
+              typed.kind === "root" ? 12 : typed.slug === currentSlug ? 11 : 10;
             ctx.fillStyle = color;
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
             ctx.fill();
           }}
           onNodeDrag={(node) => {
+            setIsDragging(true);
+            setCursor("grabbing");
             const typed = node as GraphNode;
             typed.fx = typed.x;
             typed.fy = typed.y;
           }}
           onNodeDragEnd={(node) => {
+            setIsDragging(false);
+            setCursor("grab");
             const typed = node as GraphNode;
             typed.fx = undefined;
             typed.fy = undefined;
