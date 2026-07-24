@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Github, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { BlogCommandSearch } from "@/components/layout/blog-command-search";
@@ -40,6 +40,7 @@ export function Navbar({
   );
   const portfolioHref =
     "https://portfolio-v2-koxw.vercel.app/projects/vengenceui";
+  const githubHref = "https://github.com/FirePheonix/vengeance-ui-blog-template";
 
   return (
     <header className="sticky top-0 isolate z-[200] border-b border-neutral-200 bg-background/95 dark:border-[#222] dark:bg-[#050608]/95">
@@ -77,10 +78,28 @@ export function Navbar({
                 </Link>
               ))}
             </nav>
+            <Link
+              href={githubHref}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="GitHub repository"
+              className="inline-flex size-8 items-center justify-center rounded-full border border-neutral-300/80 bg-background text-neutral-900 shadow-sm transition-colors hover:text-black dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:text-white"
+            >
+              <Github className="size-[18px]" />
+            </Link>
             <ThemeToggle />
           </div>
 
           <div className="flex items-center gap-2 sm:hidden">
+            <Link
+              href={githubHref}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="GitHub repository"
+              className="inline-flex size-8 items-center justify-center rounded-full border border-neutral-300/80 bg-background text-neutral-900 shadow-sm transition-colors hover:text-black dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:text-white"
+            >
+              <Github className="size-[18px]" />
+            </Link>
             <ThemeToggle />
             <Button
               variant="ghost"
