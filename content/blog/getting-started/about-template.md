@@ -48,11 +48,11 @@ isNew: true          # optional
 
 Image:
 
-![Vengeancy preview](/vengeancy-image.png)
+![Vengeance preview](/vengeance-image.png)
 
 Video:
 
-<video controls src="/vengeancy-demo.mp4"></video>
+<video controls src="/vengeance-demo.mp4"></video>
 
 ### Mermaid diagram
 
