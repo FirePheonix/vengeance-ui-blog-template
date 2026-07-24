@@ -77,29 +77,34 @@ const SidebarItem = memo(function SidebarItem({
 });
 
 function SidebarSection({
+  id,
   name,
   icon: Icon,
   items,
   hoveredPath,
   pathname,
   onHover,
-  expanded,
+  expandedSection,
+  onExpand,
 }: {
+  id: string;
   name: string;
   icon: LucideIcon;
   items: SidebarLinkItem[];
   hoveredPath: string | null;
   pathname: string;
   onHover: (href: string) => void;
-  expanded: boolean;
+  expandedSection: string | null;
+  onExpand: (sectionId: string) => void;
 }) {
   const isSectionActive = items.some((item) => {
     if (item.external) return false;
     return pathname === item.href;
   });
+  const isExpanded = expandedSection === id;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" onMouseEnter={() => onExpand(id)}>
       <div
         className={cn(
           "flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-sm font-medium transition-colors",
@@ -110,26 +115,35 @@ function SidebarSection({
       >
         <Icon className="h-4 w-4" />
         <span className="min-w-0 flex-1 truncate">{name}</span>
-        <ChevronUp className="h-3.5 w-3.5 text-neutral-400 dark:text-zinc-500" />
+        <ChevronUp
+          className={cn(
+            "h-3.5 w-3.5 text-neutral-400 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] dark:text-zinc-500",
+            isExpanded ? "rotate-0" : "rotate-180"
+          )}
+        />
       </div>
 
       <div
         className={cn(
-          "mt-1 ml-4 flex flex-col space-y-0.5 border-l border-neutral-200 pl-2 transition-all duration-200 dark:border-[#222]/80",
-          expanded
-            ? "max-h-[460px] opacity-100"
-            : "pointer-events-none max-h-0 overflow-hidden opacity-0"
+          "mt-1 grid transition-[grid-template-rows,opacity,margin] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          isExpanded
+            ? "grid-rows-[1fr] opacity-100"
+            : "pointer-events-none grid-rows-[0fr] opacity-0"
         )}
       >
-        {items.map((item) => (
-          <SidebarItem
-            key={item.href}
-            item={item}
-            isActive={!item.external && pathname === item.href}
-            isHovered={hoveredPath === item.href}
-            onHover={onHover}
-          />
-        ))}
+        <div className="ml-4 overflow-hidden border-l border-neutral-200 pl-2 dark:border-[#222]/80">
+          <div className="flex flex-col space-y-0.5">
+            {items.map((item) => (
+              <SidebarItem
+                key={item.href}
+                item={item}
+                isActive={!item.external && pathname === item.href}
+                isHovered={hoveredPath === item.href}
+                onHover={onHover}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -138,7 +152,7 @@ function SidebarSection({
 export function Sidebar() {
   const pathname = usePathname();
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const handleHover = useCallback((href: string) => {
     setHoveredPath(href);
@@ -150,25 +164,27 @@ export function Sidebar() {
 
   return (
     <div
-      className="w-full space-y-6 pb-8"
+      className="w-full space-y-2.5 pb-8"
       onMouseLeave={() => {
         handleMouseLeave();
-        setIsExpanded(false);
+        setExpandedSection(null);
       }}
-      onMouseEnter={() => setIsExpanded(true)}
     >
       <SidebarSection
+        id="sidebar-extra"
         name={SIDEBAR_EXTRA.name}
         icon={SIDEBAR_EXTRA.icon}
         items={SIDEBAR_EXTRA.items}
         hoveredPath={hoveredPath}
         pathname={pathname}
         onHover={handleHover}
-        expanded={isExpanded}
+        expandedSection={expandedSection}
+        onExpand={setExpandedSection}
       />
 
       {BLOG_CATEGORIES.map((category) => (
         <SidebarSection
+          id={category.name}
           key={category.name}
           name={category.name}
           icon={category.icon}
@@ -180,7 +196,8 @@ export function Sidebar() {
           hoveredPath={hoveredPath}
           pathname={pathname}
           onHover={handleHover}
-          expanded={isExpanded}
+          expandedSection={expandedSection}
+          onExpand={setExpandedSection}
         />
       ))}
     </div>
