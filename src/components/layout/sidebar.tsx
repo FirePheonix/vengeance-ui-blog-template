@@ -83,6 +83,7 @@ function SidebarSection({
   hoveredPath,
   pathname,
   onHover,
+  expanded,
 }: {
   name: string;
   icon: LucideIcon;
@@ -90,6 +91,7 @@ function SidebarSection({
   hoveredPath: string | null;
   pathname: string;
   onHover: (href: string) => void;
+  expanded: boolean;
 }) {
   const isSectionActive = items.some((item) => {
     if (item.external) return false;
@@ -111,7 +113,14 @@ function SidebarSection({
         <ChevronUp className="h-3.5 w-3.5 text-neutral-400 dark:text-zinc-500" />
       </div>
 
-      <div className="mt-1 ml-4 flex flex-col space-y-0.5 border-l border-neutral-200 pl-2 dark:border-[#222]/80">
+      <div
+        className={cn(
+          "mt-1 ml-4 flex flex-col space-y-0.5 border-l border-neutral-200 pl-2 transition-all duration-200 dark:border-[#222]/80",
+          expanded
+            ? "max-h-[460px] opacity-100"
+            : "pointer-events-none max-h-0 overflow-hidden opacity-0"
+        )}
+      >
         {items.map((item) => (
           <SidebarItem
             key={item.href}
@@ -129,6 +138,7 @@ function SidebarSection({
 export function Sidebar() {
   const pathname = usePathname();
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const handleHover = useCallback((href: string) => {
     setHoveredPath(href);
@@ -139,7 +149,14 @@ export function Sidebar() {
   }, []);
 
   return (
-    <div className="w-full space-y-6 pb-8" onMouseLeave={handleMouseLeave}>
+    <div
+      className="w-full space-y-6 pb-8"
+      onMouseLeave={() => {
+        handleMouseLeave();
+        setIsExpanded(false);
+      }}
+      onMouseEnter={() => setIsExpanded(true)}
+    >
       <SidebarSection
         name={SIDEBAR_EXTRA.name}
         icon={SIDEBAR_EXTRA.icon}
@@ -147,6 +164,7 @@ export function Sidebar() {
         hoveredPath={hoveredPath}
         pathname={pathname}
         onHover={handleHover}
+        expanded={isExpanded}
       />
 
       {BLOG_CATEGORIES.map((category) => (
@@ -162,6 +180,7 @@ export function Sidebar() {
           hoveredPath={hoveredPath}
           pathname={pathname}
           onHover={handleHover}
+          expanded={isExpanded}
         />
       ))}
     </div>
