@@ -104,7 +104,12 @@ function SidebarSection({
   const isExpanded = !isCollapsed;
 
   return (
-    <div className="flex flex-col">
+    <div
+      className={cn(
+        "flex flex-col transition-[margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        isExpanded ? "mb-4" : "mb-1.5"
+      )}
+    >
       <button
         type="button"
         onClick={() => onToggle(id)}
@@ -179,7 +184,7 @@ export function Sidebar() {
   }, []);
 
   return (
-    <div className="w-full space-y-6 pb-8" onMouseLeave={handleMouseLeave}>
+    <div className="w-full pb-8" onMouseLeave={handleMouseLeave}>
       <SidebarSection
         id="sidebar-extra"
         name={SIDEBAR_EXTRA.name}
