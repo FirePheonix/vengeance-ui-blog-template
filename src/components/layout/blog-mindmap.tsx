@@ -9,7 +9,9 @@ import {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { Expand, X } from "lucide-react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { BLOG_CATEGORIES } from "@/lib/blogs";
 
@@ -32,6 +34,9 @@ type MindMapLink = {
 export function BlogMindmap({ currentSlug }: { currentSlug: string }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   const data = useMemo(() => {
     const nodes: MindMapNode[] = [{ id: "root", label: "Blogs", kind: "root" }];
@@ -68,6 +73,10 @@ export function BlogMindmap({ currentSlug }: { currentSlug: string }) {
   );
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setExpanded(false);
@@ -99,37 +108,42 @@ export function BlogMindmap({ currentSlug }: { currentSlug: string }) {
         className="h-72"
         currentSlug={currentSlug}
         data={data}
+        isDark={isDark}
         onNodeClick={onNodeClick}
       />
 
-      {expanded ? (
-        <div
-          className="fixed inset-0 z-[320] flex items-center justify-center bg-black/30 p-4 backdrop-blur-md"
-          onClick={() => setExpanded(false)}
-        >
-          <div
-            className="relative h-[80vh] w-[min(1200px,96vw)] rounded-xl border border-neutral-200/80 bg-background/85 p-3 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950/80"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute right-3 top-3 z-10 size-8 text-neutral-600 hover:text-neutral-900 dark:text-zinc-400 dark:hover:text-zinc-200"
-              aria-label="Close expanded blog web"
+      {mounted && expanded
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/35 p-4 backdrop-blur-md"
               onClick={() => setExpanded(false)}
             >
-              <X className="size-4" />
-            </Button>
-            <MindMapCanvas
-              className="h-full"
-              currentSlug={currentSlug}
-              data={data}
-              onNodeClick={onNodeClick}
-            />
-          </div>
-        </div>
-      ) : null}
+              <div
+                className="relative h-[80vh] w-[min(1200px,96vw)] rounded-xl border border-neutral-300 bg-white p-3 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-3 top-3 z-10 size-8 text-neutral-600 hover:text-neutral-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+                  aria-label="Close expanded blog web"
+                  onClick={() => setExpanded(false)}
+                >
+                  <X className="size-4" />
+                </Button>
+                <MindMapCanvas
+                  className="h-full"
+                  currentSlug={currentSlug}
+                  data={data}
+                  isDark={isDark}
+                  onNodeClick={onNodeClick}
+                />
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
     </div>
   );
 }
@@ -138,11 +152,13 @@ function MindMapCanvas({
   className,
   currentSlug,
   data,
+  isDark,
   onNodeClick,
 }: {
   className: string;
   currentSlug: string;
   data: { nodes: MindMapNode[]; links: MindMapLink[] };
+  isDark: boolean;
   onNodeClick: (node: object) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -176,12 +192,14 @@ function MindMapCanvas({
           nodeRelSize={5}
           nodeColor={(node) => {
             const typed = node as MindMapNode;
-            if (typed.kind === "root") return "#ffffff";
-            if (typed.slug === currentSlug) return "#ffffff";
-            if (typed.kind === "category") return "#9499a5";
-            return "#6d7280";
+            if (typed.kind === "root") return isDark ? "#ffffff" : "#111827";
+            if (typed.slug === currentSlug) return isDark ? "#ffffff" : "#0b1220";
+            if (typed.kind === "category") return isDark ? "#9ca3af" : "#1f2937";
+            return isDark ? "#737b89" : "#111827";
           }}
-          linkColor={() => "rgba(120,126,139,0.45)"}
+          linkColor={() =>
+            isDark ? "rgba(120,126,139,0.45)" : "rgba(31,41,55,0.38)"
+          }
           linkWidth={(link) =>
             ((link as { source: { id?: string } }).source?.id === "root" ? 1.15 : 0.95)
           }
@@ -198,14 +216,26 @@ function MindMapCanvas({
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
             ctx.fillStyle =
-              typed.kind === "root" || isActive ? "#ffffff" : "rgba(146,154,170,0.9)";
+              typed.kind === "root" || isActive
+                ? isDark
+                  ? "#ffffff"
+                  : "#0f172a"
+                : isDark
+                  ? "rgba(146,154,170,0.9)"
+                  : "rgba(31,41,55,0.94)";
             ctx.fill();
 
             if (typed.kind !== "post") return;
             ctx.font = `${fontSize}px Inter, system-ui, sans-serif`;
             ctx.textAlign = "left";
             ctx.textBaseline = "middle";
-            ctx.fillStyle = isActive ? "#ffffff" : "rgba(148,153,165,0.95)";
+            ctx.fillStyle = isActive
+              ? isDark
+                ? "#ffffff"
+                : "#111827"
+              : isDark
+                ? "rgba(148,153,165,0.95)"
+                : "rgba(31,41,55,0.95)";
             ctx.fillText(typed.label, x + radius + 4, y);
           }}
         />
