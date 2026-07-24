@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 type SearchItem = {
   href: string;
   category: string;
+  categoryIcon: string;
   description: string;
   title: string;
   searchText: string;
@@ -78,6 +79,7 @@ export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
     return links.map((post) => ({
       href: post.href,
       category: post.category,
+      categoryIcon: `/${post.category.toLowerCase()}/${post.category.toLowerCase()}.svg`,
       description: post.description,
       title: post.title,
       searchText: post.searchText,
@@ -221,8 +223,14 @@ export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
                   onClick={() => openPost(item.href)}
                   className="flex w-full items-start gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-foreground/[0.04]"
                 >
-                  <span className="mt-0.5 rounded-md border border-foreground/10 bg-foreground/[0.04] px-2 py-1 text-[11px] font-medium text-muted-foreground">
-                    {highlightText(item.category, terms)}
+                  <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md border border-foreground/10 bg-foreground/[0.04]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.categoryIcon}
+                      alt={`${item.category} icon`}
+                      className="size-4 object-contain"
+                    />
+                    <span className="sr-only">{item.category}</span>
                   </span>
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium text-foreground">
