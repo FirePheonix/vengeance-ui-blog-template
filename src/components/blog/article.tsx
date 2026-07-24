@@ -14,16 +14,21 @@ export function BlogHeader({
   title,
   description,
   meta,
+  titleAside,
 }: {
   title: string;
   description: string;
   meta?: React.ReactNode;
+  titleAside?: React.ReactNode;
 }) {
   return (
     <header className="space-y-3">
-      <h1 className="text-4xl font-bold tracking-tight text-neutral-950 dark:text-white">
-        {title}
-      </h1>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <h1 className="text-4xl font-bold tracking-tight text-neutral-950 dark:text-white">
+          {title}
+        </h1>
+        {titleAside ? <div className="sm:pt-1">{titleAside}</div> : null}
+      </div>
       <p className="text-lg text-neutral-500 dark:text-zinc-400">
         {description}
       </p>

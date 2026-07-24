@@ -54,12 +54,22 @@ export function BlogPostView({
         title={post.title}
         description={post.description}
         meta={
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-500 dark:text-zinc-500">
-            <span>{post.author}</span>
-            <span aria-hidden>·</span>
-            <span>{post.readingTime}</span>
-            <span aria-hidden>·</span>
-            <span>Inspired by {post.inspiredBy}</span>
+          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 text-sm text-neutral-500 dark:text-zinc-500">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span>{post.author}</span>
+              <span aria-hidden>·</span>
+              <span>{post.readingTime}</span>
+              <span aria-hidden>·</span>
+              <span>Inspired by {post.inspiredBy}</span>
+            </div>
+            <div className="shrink-0">
+              <Link
+                href={`${post.href}/for-ai`}
+                className="inline-flex rounded-md border border-neutral-300 bg-neutral-50 px-2 py-0.5 text-[11px] font-medium text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:bg-zinc-800/70"
+              >
+                AI Agent View
+              </Link>
+            </div>
           </div>
         }
       />
