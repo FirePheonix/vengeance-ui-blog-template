@@ -69,6 +69,19 @@ function getReadingTime(markdown: string) {
   return `${minutes} min`;
 }
 
+function stripMarkdown(markdown: string) {
+  return markdown
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, " ")
+    .replace(/\[[^\]]*\]\([^)]+\)/g, " ")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/[*_~>-]/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function collectMarkdownFiles(dir: string, acc: string[]) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
@@ -167,6 +180,8 @@ export function getBlogLinks(posts: BlogPost[]): BlogLink[] {
     title: post.title,
     href: post.href,
     category: post.category,
+    description: post.description,
+    searchText: stripMarkdown(post.markdown),
   }));
 }
 

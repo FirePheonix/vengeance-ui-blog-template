@@ -11,7 +11,63 @@ type SearchItem = {
   category: string;
   description: string;
   title: string;
+  searchText: string;
 };
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function parseQueryTerms(query: string) {
+  return query
+    .toLowerCase()
+    .trim()
+    .split(/\s+/)
+    .filter((token) => token.length > 1);
+}
+
+function highlightText(text: string, terms: string[]) {
+  if (!text) return text;
+  if (terms.length === 0) return text;
+  const pattern = new RegExp(`(${terms.map(escapeRegExp).join("|")})`, "ig");
+  const parts = text.split(pattern);
+
+  return parts.map((part, index) => {
+    const isMatch = terms.some((term) => part.toLowerCase() === term.toLowerCase());
+    if (!isMatch) return <span key={`${part}-${index}`}>{part}</span>;
+    return (
+      <mark
+        key={`${part}-${index}`}
+        className="rounded bg-amber-200/90 px-0.5 text-foreground dark:bg-amber-400/35 dark:text-zinc-100"
+      >
+        {part}
+      </mark>
+    );
+  });
+}
+
+function buildSnippet(text: string, terms: string[]) {
+  if (!text) return "";
+  if (terms.length === 0) return text.slice(0, 140);
+
+  const lowered = text.toLowerCase();
+  let firstMatch = -1;
+  for (const term of terms) {
+    const idx = lowered.indexOf(term);
+    if (idx !== -1 && (firstMatch === -1 || idx < firstMatch)) {
+      firstMatch = idx;
+    }
+  }
+
+  if (firstMatch === -1) return text.slice(0, 140);
+  const start = Math.max(0, firstMatch - 48);
+  const end = Math.min(text.length, firstMatch + 120);
+  const segment = text.slice(start, end).trim();
+
+  const prefix = start > 0 ? "..." : "";
+  const suffix = end < text.length ? "..." : "";
+  return `${prefix}${segment}${suffix}`;
+}
 
 export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
   const router = useRouter();
@@ -22,19 +78,59 @@ export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
     return links.map((post) => ({
       href: post.href,
       category: post.category,
-      description: "",
+      description: post.description,
       title: post.title,
+      searchText: post.searchText,
     }));
   }, [links]);
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((item) =>
-      `${item.title} ${item.description} ${item.category}`
-        .toLowerCase()
-        .includes(q)
-    );
+    const terms = parseQueryTerms(query);
+    if (terms.length === 0) {
+      return items.slice(0, 40).map((item) => ({
+        ...item,
+        score: 0,
+        snippet: item.description || buildSnippet(item.searchText, terms),
+      }));
+    }
+
+    const scored = items
+      .map((item) => {
+        const title = item.title.toLowerCase();
+        const description = item.description.toLowerCase();
+        const category = item.category.toLowerCase();
+        const searchBody = item.searchText.toLowerCase();
+
+        let score = 0;
+        for (const term of terms) {
+          if (title === term) score += 20;
+          if (title.startsWith(term)) score += 12;
+          if (title.includes(term)) score += 8;
+          if (description.includes(term)) score += 6;
+          if (category.includes(term)) score += 4;
+          if (searchBody.includes(term)) score += 3;
+        }
+
+        const allTermsPresent = terms.every(
+          (term) =>
+            title.includes(term) ||
+            description.includes(term) ||
+            category.includes(term) ||
+            searchBody.includes(term)
+        );
+        if (allTermsPresent) score += 10;
+
+        return {
+          ...item,
+          score,
+          snippet: item.description || buildSnippet(item.searchText, terms),
+        };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 40);
+
+    return scored;
   }, [items, query]);
 
   useEffect(() => {
@@ -113,7 +209,12 @@ export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
                 No result found.
               </p>
             ) : (
-              filtered.map((item) => (
+              filtered.map((item) => {
+                const terms = parseQueryTerms(query);
+                const highlightedTitle = highlightText(item.title, terms);
+                const highlightedSnippet = highlightText(item.snippet, terms);
+
+                return (
                 <button
                   key={item.href}
                   type="button"
@@ -121,18 +222,19 @@ export function BlogCommandSearch({ links }: { links: BlogLink[] }) {
                   className="flex w-full items-start gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-foreground/[0.04]"
                 >
                   <span className="mt-0.5 rounded-md border border-foreground/10 bg-foreground/[0.04] px-2 py-1 text-[11px] font-medium text-muted-foreground">
-                    {item.category}
+                    {highlightText(item.category, terms)}
                   </span>
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium text-foreground">
-                      {item.title}
+                      {highlightedTitle}
                     </span>
                     <span className="block truncate text-xs text-muted-foreground">
-                      {item.description}
+                      {highlightedSnippet}
                     </span>
                   </span>
                 </button>
-              ))
+                );
+              })
             )}
           </div>
         </div>

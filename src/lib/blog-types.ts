@@ -35,4 +35,6 @@ export type BlogLink = {
   title: string;
   href: string;
   category: string;
+  description: string;
+  searchText: string;
 };
