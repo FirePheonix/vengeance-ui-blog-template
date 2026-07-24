@@ -80,6 +80,7 @@ const SidebarItem = memo(function SidebarItem({
 function SidebarSection({
   id,
   name,
+  iconSrc,
   icon: Icon,
   items,
   hoveredPath,
@@ -90,6 +91,7 @@ function SidebarSection({
 }: {
   id: string;
   name: string;
+  iconSrc: string;
   icon: LucideIcon;
   items: SidebarLinkItem[];
   hoveredPath: string | null;
@@ -98,6 +100,7 @@ function SidebarSection({
   isCollapsed: boolean;
   onToggle: (sectionId: string) => void;
 }) {
+  const [iconFailed, setIconFailed] = useState(false);
   const isSectionActive = items.some((item) => {
     if (item.external) return false;
     return pathname === item.href;
@@ -121,7 +124,16 @@ function SidebarSection({
             : "text-neutral-600 hover:bg-neutral-100 dark:text-zinc-300 dark:hover:bg-zinc-800/40"
         )}
       >
-        <Icon className="h-4 w-4" />
+        {iconFailed ? (
+          <Icon className="h-4 w-4" />
+        ) : (
+          <img
+            src={iconSrc}
+            alt={`${name} icon`}
+            className="h-4 w-4 object-contain"
+            onError={() => setIconFailed(true)}
+          />
+        )}
         <span className="min-w-0 flex-1 truncate">{name}</span>
         <ChevronUp
           className={cn(
@@ -191,6 +203,7 @@ export function Sidebar({ categories }: { categories: BlogCategory[] }) {
           id={category.name}
           key={category.name}
           name={category.name}
+          iconSrc={`/${category.name.toLowerCase()}/${category.name.toLowerCase()}.svg`}
           icon={[Compass, BookOpen, Layers, CircuitBoard][index % 4]}
           items={category.items.map((post) => ({
             name: post.title,
