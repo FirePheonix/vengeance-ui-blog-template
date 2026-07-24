@@ -42,15 +42,7 @@ export function Navbar({
       links.find((post) => post.href.startsWith("/about/"))?.href ?? homeHref,
     [homeHref, links]
   );
-  const portfolioHref = useMemo(
-    () =>
-      links.find(
-        (post) =>
-          post.href.includes("/portfolio") ||
-          post.title.toLowerCase().includes("portfolio")
-      )?.href ?? homeHref,
-    [homeHref, links]
-  );
+  const portfolioHref = "https://portfolio-v2-koxw.vercel.app/projects/vengenceui";
 
   return (
     <header className="sticky top-0 isolate z-[200] border-b border-neutral-200 bg-background/95 dark:border-[#222] dark:bg-[#050608]/95">
@@ -67,12 +59,14 @@ export function Navbar({
             <BlogCommandSearch links={links} />
             <nav className="flex items-center gap-1">
               {[
-                { href: portfolioHref, label: "Portfolio" },
+                { href: portfolioHref, label: "Portfolio", external: true },
                 { href: aboutHref, label: "About" },
               ].map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noreferrer" : undefined}
                   className={cn(
                     "rounded-full px-3 py-1.5 text-sm text-foreground/75 transition-colors hover:text-foreground",
                     pathname === item.href && "text-foreground"

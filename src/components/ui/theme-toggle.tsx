@@ -42,9 +42,12 @@ export function ThemeToggle() {
         onClick={() => setOpen((value) => !value)}
         variant="ghost"
         aria-label="Toggle theme"
-        className="size-8 rounded-full border border-neutral-300/80 bg-background text-foreground shadow-sm hover:text-foreground dark:border-zinc-700"
+        className="size-8 rounded-full border border-neutral-300/80 bg-background text-neutral-900 shadow-sm hover:text-black dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:hover:text-white"
       >
-        <ActiveIcon className="h-[18px] w-[18px]" strokeWidth={2.3} />
+        <ActiveIcon
+          className="h-[18px] w-[18px] shrink-0 text-neutral-900 dark:text-zinc-100"
+          strokeWidth={2.3}
+        />
       </Button>
 
       {open ? (
