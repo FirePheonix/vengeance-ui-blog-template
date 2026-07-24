@@ -169,9 +169,6 @@ function MindMapCanvas({
   onNodeClick: (node: object) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const graphRef = useRef<{
-    d3ReheatSimulation: () => void;
-  } | null>(null);
   const [size, setSize] = useState({ height: 0, width: 0 });
   const [isDragging, setIsDragging] = useState(false);
 
@@ -200,7 +197,6 @@ function MindMapCanvas({
     >
       {size.width > 0 && size.height > 0 ? (
         <ForceGraph2D
-          ref={graphRef}
           width={size.width}
           height={size.height}
           graphData={data}
@@ -230,16 +226,28 @@ function MindMapCanvas({
             if (isDragging) return;
             setCursor(node ? "pointer" : "grab");
           }}
-          nodePointerAreaPaint={(node, color, ctx) => {
+          nodePointerAreaPaint={(node, color, ctx, scale) => {
             const typed = node as GraphNode;
             const x = typed.x ?? 0;
             const y = typed.y ?? 0;
             const radius =
               typed.kind === "root" ? 12 : typed.slug === currentSlug ? 11 : 10;
             ctx.fillStyle = color;
+
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
             ctx.fill();
+
+            if (typed.kind !== "post") return;
+
+            const fontSize = Math.max(8, 11 / scale);
+            ctx.font = `${fontSize}px Inter, system-ui, sans-serif`;
+            const textWidth = ctx.measureText(typed.label).width;
+            const boxHeight = fontSize + 6;
+            const boxX = x + radius + 1;
+            const boxY = y - boxHeight / 2;
+
+            ctx.fillRect(boxX, boxY, textWidth + 6, boxHeight);
           }}
           onNodeDrag={(node) => {
             setIsDragging(true);
@@ -254,7 +262,6 @@ function MindMapCanvas({
             const typed = node as GraphNode;
             typed.fx = undefined;
             typed.fy = undefined;
-            graphRef.current?.d3ReheatSimulation();
           }}
           onNodeClick={onNodeClick}
           nodeCanvasObject={(node, ctx, scale) => {

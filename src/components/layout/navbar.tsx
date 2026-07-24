@@ -53,7 +53,8 @@ export function Navbar({
   );
   const portfolioHref =
     "https://portfolio-v2-koxw.vercel.app/projects/vengenceui";
-  const githubHref = "https://github.com/FirePheonix/vengeance-ui-blog-template";
+  const githubHref =
+    "https://github.com/FirePheonix/vengeance-ui-blog-template";
 
   return (
     <header className="sticky top-0 isolate z-[200] border-b border-neutral-200/80 bg-background/90 backdrop-blur-xl dark:border-[#222]/90 dark:bg-[#050608]/88">

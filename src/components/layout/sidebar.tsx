@@ -127,6 +127,7 @@ function SidebarSection({
         {iconFailed ? (
           <Icon className="h-5 w-5" />
         ) : (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={iconSrc}
             alt={`${name} icon`}
@@ -151,7 +152,8 @@ function SidebarSection({
             : "pointer-events-none grid-rows-[0fr] opacity-0",
         )}
       >
-        <div className="ml-4 overflow-hidden border-l border-neutral-200 pl-2 dark:border-[#222]/80">
+        <div className="relative ml-4 overflow-hidden pl-2">
+          <div className="pointer-events-none absolute bottom-2 left-0 top-2 w-[2px] rounded-full bg-gradient-to-b from-sky-400/45 via-cyan-300/20 to-blue-400/45 dark:from-sky-300/45 dark:via-cyan-300/15 dark:to-blue-300/45" />
           <div className="flex flex-col space-y-0.5">
             {items.map((item) => (
               <SidebarItem
