@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   type CSSProperties,
   useCallback,
@@ -15,6 +16,11 @@ export interface TOCItemDef {
   id: string;
   title: string;
   depth: number;
+}
+
+export interface TOCBlogLink {
+  href: string;
+  title: string;
 }
 
 interface ComputedSVG {
@@ -97,6 +103,32 @@ function TOCItem({ item, active }: { item: TOCItemDef; active: boolean }) {
       >
         {item.title}
       </a>
+    </li>
+  );
+}
+
+function BlogRailItem({
+  active,
+  href,
+  title,
+}: {
+  active: boolean;
+  href: string;
+  title: string;
+}) {
+  return (
+    <li className="relative z-0 h-10">
+      <Link
+        href={href}
+        className={cn(
+          "flex h-full items-center truncate pl-5 text-[13px] font-medium leading-none transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          active
+            ? "text-foreground"
+            : "text-neutral-500 hover:text-neutral-700 dark:text-zinc-500 dark:hover:text-zinc-300"
+        )}
+      >
+        {title}
+      </Link>
     </li>
   );
 }
@@ -265,9 +297,31 @@ function getActiveStartIndex(items: TOCItemDef[], activeIndex: number) {
   return activeIndex;
 }
 
-export function TableOfContents({ items }: { items: TOCItemDef[] }) {
+export function TableOfContents({
+  items,
+  blogLinks = [],
+  activeBlogHref,
+}: {
+  items: TOCItemDef[];
+  blogLinks?: TOCBlogLink[];
+  activeBlogHref?: string;
+}) {
   const [activeIndex, setActiveIndex] = useState(0);
   const computed = useMemo(() => buildTocPath(items), [items]);
+  const blogRailItems = useMemo<TOCItemDef[]>(
+    () =>
+      blogLinks.map((post) => ({
+        id: post.href,
+        title: post.title,
+        depth: 2,
+      })),
+    [blogLinks]
+  );
+  const computedBlogs = useMemo(() => buildTocPath(blogRailItems), [blogRailItems]);
+  const activeBlogIndex = Math.max(
+    0,
+    blogLinks.findIndex((post) => post.href === activeBlogHref)
+  );
   const activeStartIndex = getActiveStartIndex(items, activeIndex);
   const rafRef = useRef<number | null>(null);
   const lastIndexRef = useRef(0);
@@ -347,6 +401,31 @@ export function TableOfContents({ items }: { items: TOCItemDef[] }) {
             ))}
           </ul>
         </div>
+
+        {blogLinks.length > 0 ? (
+          <div className="space-y-3">
+            <div className="px-1 text-[11px] font-semibold uppercase tracking-normal text-muted-foreground">
+              Blog map
+            </div>
+            <div className="relative ml-2">
+              <ActiveTocPath
+                activeEndIndex={activeBlogIndex}
+                activeStartIndex={activeBlogIndex}
+                computed={computedBlogs}
+              />
+              <ul className="relative z-0 flex w-full flex-col">
+                {blogLinks.map((post) => (
+                  <BlogRailItem
+                    key={post.href}
+                    active={post.href === activeBlogHref}
+                    href={post.href}
+                    title={post.title}
+                  />
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : null}
       </div>
     </aside>
   );
