@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogPostView } from "@/components/blog/post-view";
 import { TableOfContents } from "@/components/layout/toc";
-import { ALL_POSTS, getPost } from "@/lib/blogs";
+import {
+  ALL_POSTS,
+  getMarkdownHeadings,
+  getPost,
+  getPostMarkdown,
+} from "@/lib/blogs";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -29,24 +34,14 @@ export default async function BlogPostPage({ params }: PageProps) {
   const post = getPost(slug);
   if (!post) notFound();
 
-  const tocItems = post.sections
-    .filter((block) => block.type === "heading")
-    .map((block) => {
-      if (block.type !== "heading") {
-        return { id: "", title: "", depth: 2 };
-      }
-      return {
-        id: block.id,
-        title: block.title,
-        depth: block.depth ?? 2,
-      };
-    });
+  const markdown = getPostMarkdown(post);
+  const tocItems = getMarkdownHeadings(markdown);
 
   return (
     <>
       <main className="relative min-w-0 py-8 md:pl-8 lg:pl-12 xl:pl-20">
         <div className="w-full min-w-0 max-w-6xl">
-          <BlogPostView post={post} />
+          <BlogPostView post={post} markdown={markdown} headings={tocItems} />
         </div>
       </main>
       <TableOfContents items={tocItems} />

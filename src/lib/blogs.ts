@@ -10,7 +10,7 @@ import {
 export type BlogBlock =
   | { type: "paragraph"; text: string }
   | { type: "heading"; id: string; title: string; depth?: 2 | 3 }
-  | { type: "code"; title?: string; code: string }
+  | { type: "code"; title?: string; code: string; language?: string }
   | { type: "list"; items: string[] }
   | { type: "quote"; text: string; cite?: string };
 
@@ -26,11 +26,114 @@ export type BlogPost = {
   sections: BlogBlock[];
 };
 
+export type TOCHeading = {
+  id: string;
+  title: string;
+  depth: 2 | 3;
+};
+
 export type BlogCategory = {
   name: string;
   icon: LucideIcon;
   items: BlogPost[];
 };
+
+function markdownEscape(value: string) {
+  return value.replace(/([`*_{}\[\]()#+\-.!|>])/g, "\\$1");
+}
+
+export function slugifyHeading(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function normalizeMarkdownSlug(slug: string, counts: Map<string, number>) {
+  const nextCount = (counts.get(slug) ?? 0) + 1;
+  counts.set(slug, nextCount);
+
+  return nextCount > 1 ? `${slug}-${nextCount}` : slug;
+}
+
+export function blocksToMarkdown(blocks: BlogBlock[]) {
+  const lines: string[] = [];
+
+  for (const block of blocks) {
+    if (block.type === "heading") {
+      const depth = block.depth ?? 2;
+      const hashes = depth === 3 ? "###" : "##";
+      lines.push(`${hashes} ${block.title}`);
+      lines.push("");
+      continue;
+    }
+
+    if (block.type === "paragraph") {
+      lines.push(block.text);
+      lines.push("");
+      continue;
+    }
+
+    if (block.type === "list") {
+      for (const item of block.items) {
+        lines.push(`- ${item}`);
+      }
+      lines.push("");
+      continue;
+    }
+
+    if (block.type === "quote") {
+      lines.push(`> ${block.text}`);
+      if (block.cite) {
+        lines.push(`> - ${markdownEscape(block.cite)}`);
+      }
+      lines.push("");
+      continue;
+    }
+
+    if (block.type === "code") {
+      lines.push(`\`\`\`${block.language ?? "tsx"}`);
+      lines.push(block.code.trimEnd());
+      lines.push("\`\`\`");
+      lines.push("");
+    }
+  }
+
+  return lines.join("\n").trim();
+}
+
+export function getPostMarkdown(post: BlogPost) {
+  return blocksToMarkdown(post.sections);
+}
+
+export function getMarkdownHeadings(markdown: string): TOCHeading[] {
+  const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+  const usedSlugs = new Map<string, number>();
+  const headings: TOCHeading[] = [];
+  let match: RegExpExecArray | null;
+
+  match = headingRegex.exec(markdown);
+  while (match) {
+    const hashes = match[1];
+    const rawTitle = match[2]
+      .trim()
+      .replace(/\s+#+\s*$/, "");
+    const depth = hashes.length === 3 ? 3 : 2;
+    const baseSlug = slugifyHeading(rawTitle) || `section-${headings.length + 1}`;
+
+    headings.push({
+      id: normalizeMarkdownSlug(baseSlug, usedSlugs),
+      title: rawTitle,
+      depth,
+    });
+
+    match = headingRegex.exec(markdown);
+  }
+
+  return headings;
+}
 
 const aboutTemplate: BlogPost = {
   slug: "about",
@@ -83,6 +186,31 @@ const aboutTemplate: BlogPost = {
         "Keep slug unique — routes are /[slug].",
         "Heading blocks with an id feed the right-side “On this page” TOC.",
       ],
+    },
+    {
+      type: "heading",
+      id: "rich-markdown",
+      title: "Rich markdown blocks",
+    },
+    {
+      type: "paragraph",
+      text: "Image markdown works directly:\n\n![Vercel mark](/vercel.svg)",
+    },
+    {
+      type: "paragraph",
+      text: "Video embeds are supported with HTML:\n\n<video controls src=\"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4\"></video>",
+    },
+    {
+      type: "code",
+      title: "mermaid - sequence example",
+      language: "mermaid",
+      code: `sequenceDiagram
+  participant U as User
+  participant B as Blog
+  participant R as Renderer
+  U->>B: Open post
+  B->>R: Parse markdown
+  R-->>U: Render diagram`,
     },
   ],
 };

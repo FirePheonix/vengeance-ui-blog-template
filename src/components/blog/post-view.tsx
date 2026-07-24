@@ -1,18 +1,44 @@
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 import {
   BlogArticle,
   BlogCodeBlock,
   BlogHeader,
-  BlogList,
-  BlogParagraph,
-  BlogQuote,
 } from "@/components/blog/article";
-import type { BlogPost } from "@/lib/blogs";
+import { MermaidDiagram } from "@/components/blog/mermaid-diagram";
+import type { BlogPost, TOCHeading } from "@/lib/blogs";
 import { getAdjacentPosts } from "@/lib/blogs";
-import { cn } from "@/lib/utils";
 
-export function BlogPostView({ post }: { post: BlogPost }) {
+function flattenText(node: React.ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") {
+    return String(node);
+  }
+
+  if (Array.isArray(node)) {
+    return node.map(flattenText).join("");
+  }
+
+  if (node && typeof node === "object" && "props" in node) {
+    const withChildren = node as { props?: { children?: React.ReactNode } };
+    return flattenText(withChildren.props?.children ?? "");
+  }
+
+  return "";
+}
+
+export function BlogPostView({
+  post,
+  markdown,
+  headings,
+}: {
+  post: BlogPost;
+  markdown: string;
+  headings: TOCHeading[];
+}) {
   const { prev, next } = getAdjacentPosts(post.slug);
+  let headingIndex = 0;
 
   return (
     <BlogArticle>
@@ -31,52 +57,123 @@ export function BlogPostView({ post }: { post: BlogPost }) {
       />
 
       <div className="space-y-6">
-        {post.sections.map((block, index) => {
-          const key = `${post.slug}-${block.type}-${index}`;
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            h2: ({ children }) => {
+              const heading = headings[headingIndex++];
+              return (
+                <h2
+                  id={heading?.id}
+                  className="scroll-mt-24 text-2xl font-bold tracking-tight text-neutral-950 dark:text-white"
+                >
+                  {children}
+                </h2>
+              );
+            },
+            h3: ({ children }) => {
+              const heading = headings[headingIndex++];
+              return (
+                <h3
+                  id={heading?.id}
+                  className="scroll-mt-24 text-xl font-semibold tracking-tight text-neutral-950 dark:text-white"
+                >
+                  {children}
+                </h3>
+              );
+            },
+            p: ({ children }) => (
+              <p className="max-w-4xl text-base leading-7 text-neutral-700 dark:text-zinc-300">
+                {children}
+              </p>
+            ),
+            blockquote: ({ children }) => (
+              <blockquote className="max-w-4xl border-l-2 border-neutral-300 pl-4 text-base leading-7 text-neutral-600 italic dark:border-zinc-700 dark:text-zinc-400">
+                {children}
+              </blockquote>
+            ),
+            ul: ({ children }) => (
+              <ul className="max-w-4xl list-disc space-y-2 pl-5 text-base leading-7 text-neutral-700 dark:text-zinc-300">
+                {children}
+              </ul>
+            ),
+            ol: ({ children }) => (
+              <ol className="max-w-4xl list-decimal space-y-2 pl-5 text-base leading-7 text-neutral-700 dark:text-zinc-300">
+                {children}
+              </ol>
+            ),
+            code: ({ className, children }) => {
+              const language = className?.startsWith("language-")
+                ? className.replace("language-", "")
+                : undefined;
+              const rawCode = flattenText(children).replace(/\n$/, "");
+              const isInline = !className?.includes("language-");
 
-          if (block.type === "heading") {
-            const depth = block.depth ?? 2;
-            const Tag = depth >= 3 ? "h3" : "h2";
-            return (
-              <Tag
-                key={key}
-                id={block.id}
-                className={cn(
-                  "scroll-mt-24 tracking-tight text-neutral-950 dark:text-white",
-                  depth >= 3
-                    ? "text-xl font-semibold"
-                    : "text-2xl font-bold"
-                )}
+              if (isInline) {
+                return (
+                  <code className="rounded bg-neutral-100 px-1 py-0.5 font-mono text-[0.92em] text-neutral-800 dark:bg-zinc-800 dark:text-zinc-200">
+                    {children}
+                  </code>
+                );
+              }
+
+              if (language === "mermaid") {
+                return <MermaidDiagram chart={rawCode} />;
+              }
+
+              return <BlogCodeBlock code={rawCode} title={language} />;
+            },
+            img: ({ src, alt }) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={src ?? ""}
+                alt={alt ?? ""}
+                loading="lazy"
+                className="w-full max-w-4xl rounded-md border border-neutral-200 object-cover dark:border-zinc-800"
+              />
+            ),
+            video: ({ src, children }) => (
+              <video
+                controls
+                preload="metadata"
+                src={typeof src === "string" ? src : undefined}
+                className="w-full max-w-4xl rounded-md border border-neutral-200 bg-black dark:border-zinc-800"
               >
-                {block.title}
-              </Tag>
-            );
-          }
+                {children}
+              </video>
+            ),
+            a: ({ href, children }) => {
+              const isVideoLink =
+                typeof href === "string" &&
+                /\.(mp4|webm|ogg)(\?.*)?$/i.test(href);
 
-          if (block.type === "paragraph") {
-            return <BlogParagraph key={key}>{block.text}</BlogParagraph>;
-          }
+              if (isVideoLink) {
+                return (
+                  <video
+                    controls
+                    preload="metadata"
+                    src={href}
+                    className="w-full max-w-4xl rounded-md border border-neutral-200 bg-black dark:border-zinc-800"
+                  />
+                );
+              }
 
-          if (block.type === "code") {
-            return (
-              <BlogCodeBlock key={key} code={block.code} title={block.title} />
-            );
-          }
-
-          if (block.type === "list") {
-            return <BlogList key={key} items={block.items} />;
-          }
-
-          if (block.type === "quote") {
-            return (
-              <BlogQuote key={key} cite={block.cite}>
-                {block.text}
-              </BlogQuote>
-            );
-          }
-
-          return null;
-        })}
+              return (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary underline underline-offset-4"
+                >
+                  {children}
+                </a>
+              );
+            },
+          }}
+        >
+          {markdown}
+        </ReactMarkdown>
       </div>
 
       <nav className="flex max-w-4xl items-start justify-between gap-6 border-t border-neutral-200 pt-8 dark:border-zinc-800">
