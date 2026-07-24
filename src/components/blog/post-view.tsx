@@ -136,14 +136,17 @@ export function BlogPostView({
               />
             ),
             video: ({ src, children }) => (
-              <video
-                controls
-                preload="metadata"
-                src={typeof src === "string" ? src : undefined}
-                className="w-full max-w-4xl rounded-md border border-neutral-300 bg-black p-1 shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]"
-              >
-                {children}
-              </video>
+              <div className="w-full max-w-4xl overflow-hidden rounded-md border border-neutral-300 bg-background shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]">
+                <video
+                  controls
+                  preload="metadata"
+                  playsInline
+                  src={typeof src === "string" ? src : undefined}
+                  className="block w-full bg-black"
+                >
+                  {children}
+                </video>
+              </div>
             ),
             script: () => null,
             a: ({ href, children }) => {
@@ -153,12 +156,15 @@ export function BlogPostView({
 
               if (isVideoLink) {
                 return (
-                  <video
-                    controls
-                    preload="metadata"
-                    src={href}
-                    className="w-full max-w-4xl rounded-md border border-neutral-300 bg-black p-1 shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]"
-                  />
+                  <div className="w-full max-w-4xl overflow-hidden rounded-md border border-neutral-300 bg-background shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]">
+                    <video
+                      controls
+                      preload="metadata"
+                      playsInline
+                      src={href}
+                      className="block w-full bg-black"
+                    />
+                  </div>
                 );
               }
 
