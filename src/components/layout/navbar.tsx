@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { BlogCommandSearch } from "@/components/layout/blog-command-search";
@@ -33,8 +33,23 @@ export function Navbar({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [mobileExpandedSections, setMobileExpandedSections] = useState<
+    Set<string>
+  >(() => new Set());
 
   const close = useCallback(() => setOpen(false), []);
+
+  const toggleMobileSection = useCallback((sectionName: string) => {
+    setMobileExpandedSections((current) => {
+      const next = new Set(current);
+      if (next.has(sectionName)) {
+        next.delete(sectionName);
+      } else {
+        next.add(sectionName);
+      }
+      return next;
+    });
+  }, []);
 
   const mobileSections = useMemo(() => {
     const map = new Map<string, BlogLink[]>();
@@ -145,30 +160,56 @@ export function Navbar({
             </Button>
           </div>
           <div className="max-h-[calc(100vh-3.5rem)] space-y-6 overflow-y-auto px-4 py-6">
-            {mobileSections.map((category) => (
-              <div key={category.name} className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {category.name}
-                </p>
-                <div className="flex flex-col gap-1">
-                  {category.items.map((post) => (
-                    <Link
-                      key={post.href}
-                      href={post.href}
-                      onClick={close}
+            {mobileSections.map((category) => {
+              const isExpanded = mobileExpandedSections.has(category.name);
+
+              return (
+                <div key={category.name} className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => toggleMobileSection(category.name)}
+                    className="flex w-full items-center justify-between rounded-md px-2 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:bg-neutral-100 hover:text-foreground dark:hover:bg-zinc-800/60"
+                    aria-expanded={isExpanded}
+                  >
+                    <span>{category.name}</span>
+                    <ChevronDown
                       className={cn(
-                        "rounded-md px-3 py-2 text-sm",
-                        pathname === post.href
-                          ? "bg-neutral-100 font-medium dark:bg-zinc-800/80"
-                          : "text-neutral-600 dark:text-zinc-400",
+                        "size-4 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                        isExpanded && "rotate-180",
                       )}
-                    >
-                      {post.title}
-                    </Link>
-                  ))}
+                    />
+                  </button>
+                  <div
+                    className={cn(
+                      "grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                      isExpanded
+                        ? "grid-rows-[1fr] opacity-100"
+                        : "grid-rows-[0fr] opacity-0",
+                    )}
+                  >
+                    <div className="min-h-0 overflow-hidden">
+                      <div className="flex flex-col gap-1">
+                        {category.items.map((post) => (
+                          <Link
+                            key={post.href}
+                            href={post.href}
+                            onClick={close}
+                            className={cn(
+                              "rounded-md px-3 py-2 text-sm",
+                              pathname === post.href
+                                ? "bg-neutral-100 font-medium dark:bg-zinc-800/80"
+                                : "text-neutral-600 dark:text-zinc-400",
+                            )}
+                          >
+                            {post.title}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ) : null}
