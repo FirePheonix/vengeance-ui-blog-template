@@ -28,6 +28,12 @@ function flattenText(node: React.ReactNode): string {
   return "";
 }
 
+function stripScriptTags(value: string) {
+  return value
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+    .replace(/<script[^>]*\/>/gi, "");
+}
+
 export function BlogPostView({
   post,
   markdown,
@@ -38,6 +44,7 @@ export function BlogPostView({
   headings: TOCHeading[];
 }) {
   const { prev, next } = getAdjacentPosts(post.slug);
+  const safeMarkdown = stripScriptTags(markdown);
   let headingIndex = 0;
 
   return (
@@ -86,9 +93,21 @@ export function BlogPostView({
               );
             },
             p: ({ children }) => (
-              <p className="max-w-4xl text-base leading-7 text-neutral-700 dark:text-zinc-300">
-                {children}
-              </p>
+              React.Children.toArray(children).some((child) => {
+                if (!React.isValidElement(child)) return false;
+                return (
+                  typeof child.type === "string" &&
+                  ["div", "figure", "img", "video", "pre", "table", "ul", "ol"].includes(
+                    child.type
+                  )
+                );
+              }) ? (
+                <div className="max-w-4xl">{children}</div>
+              ) : (
+                <p className="max-w-4xl text-base leading-7 text-neutral-700 dark:text-zinc-300">
+                  {children}
+                </p>
+              )
             ),
             blockquote: ({ children }) => (
               <blockquote className="max-w-4xl border-l-2 border-neutral-300 pl-4 text-base leading-7 text-neutral-600 italic dark:border-zinc-700 dark:text-zinc-400">
@@ -133,7 +152,7 @@ export function BlogPostView({
                   src={src ?? ""}
                   alt={alt ?? ""}
                   loading="lazy"
-                  className="block h-auto w-full object-contain"
+                  className="block h-auto w-full"
                 />
               </div>
             ),
@@ -144,7 +163,7 @@ export function BlogPostView({
                   preload="metadata"
                   playsInline
                   src={typeof src === "string" ? src : undefined}
-                  className="block h-auto w-full bg-black object-contain"
+                  className="block h-auto w-full bg-black"
                 >
                   {children}
                 </video>
@@ -164,7 +183,7 @@ export function BlogPostView({
                       preload="metadata"
                       playsInline
                       src={href}
-                      className="block h-auto w-full bg-black object-contain"
+                      className="block h-auto w-full bg-black"
                     />
                   </div>
                 );
@@ -183,7 +202,7 @@ export function BlogPostView({
             },
           }}
         >
-          {markdown}
+          {safeMarkdown}
         </ReactMarkdown>
       </div>
 

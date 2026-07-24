@@ -28,12 +28,13 @@ export function ThemeToggle() {
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, []);
 
-  const activeMode =
-    !mounted || currentTheme === "system"
+  const activeMode = mounted
+    ? currentTheme === "system"
       ? resolvedTheme === "dark"
         ? "dark"
         : "light"
-      : currentTheme;
+      : currentTheme
+    : "light";
   const ActiveIcon = activeMode === "dark" ? MoonStar : SunDim;
 
   return (
