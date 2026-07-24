@@ -231,10 +231,15 @@ function MindMapCanvas({
             ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
             ctx.fill();
           }}
-          onNodeDragEnd={(node) => {
+          onNodeDrag={(node) => {
             const typed = node as GraphNode;
             typed.fx = typed.x;
             typed.fy = typed.y;
+          }}
+          onNodeDragEnd={(node) => {
+            const typed = node as GraphNode;
+            typed.fx = undefined;
+            typed.fy = undefined;
             graphRef.current?.d3ReheatSimulation();
           }}
           onNodeClick={onNodeClick}
