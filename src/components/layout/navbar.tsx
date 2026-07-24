@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { BlogCommandSearch } from "@/components/layout/blog-command-search";
 import { cn } from "@/lib/utils";
 import { ALL_POSTS, BLOG_CATEGORIES } from "@/lib/blogs";
 
@@ -34,6 +35,7 @@ export function Navbar() {
           </Link>
 
           <div className="hidden items-center gap-3 sm:flex">
+            <BlogCommandSearch />
             <nav className="flex items-center gap-1">
               {BLOG_CATEGORIES.slice(0, 3).map((category) => {
                 const first = category.items[0];
