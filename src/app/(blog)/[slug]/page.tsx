@@ -44,14 +44,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           <BlogPostView post={post} markdown={markdown} headings={tocItems} />
         </div>
       </main>
-      <TableOfContents
-        items={tocItems}
-        blogLinks={ALL_POSTS.map((entry) => ({
-          href: `/${entry.slug}`,
-          title: entry.title,
-        }))}
-        activeBlogHref={`/${post.slug}`}
-      />
+      <TableOfContents items={tocItems} currentSlug={post.slug} />
     </>
   );
 }

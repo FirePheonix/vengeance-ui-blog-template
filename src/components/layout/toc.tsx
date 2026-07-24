@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   type CSSProperties,
   useCallback,
@@ -10,17 +9,13 @@ import {
   useState,
 } from "react";
 import { AlignLeft } from "lucide-react";
+import { BlogMindmap } from "@/components/layout/blog-mindmap";
 import { cn } from "@/lib/utils";
 
 export interface TOCItemDef {
   id: string;
   title: string;
   depth: number;
-}
-
-export interface TOCBlogLink {
-  href: string;
-  title: string;
 }
 
 interface ComputedSVG {
@@ -103,32 +98,6 @@ function TOCItem({ item, active }: { item: TOCItemDef; active: boolean }) {
       >
         {item.title}
       </a>
-    </li>
-  );
-}
-
-function BlogRailItem({
-  active,
-  href,
-  title,
-}: {
-  active: boolean;
-  href: string;
-  title: string;
-}) {
-  return (
-    <li className="relative z-0 h-10">
-      <Link
-        href={href}
-        className={cn(
-          "flex h-full items-center truncate pl-5 text-[13px] font-medium leading-none transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-          active
-            ? "text-foreground"
-            : "text-neutral-500 hover:text-neutral-700 dark:text-zinc-500 dark:hover:text-zinc-300"
-        )}
-      >
-        {title}
-      </Link>
     </li>
   );
 }
@@ -299,46 +268,18 @@ function getActiveStartIndex(items: TOCItemDef[], activeIndex: number) {
 
 export function TableOfContents({
   items,
-  blogLinks = [],
-  activeBlogHref,
+  currentSlug,
 }: {
   items: TOCItemDef[];
-  blogLinks?: TOCBlogLink[];
-  activeBlogHref?: string;
+  currentSlug?: string;
 }) {
-  const usingBlogRail = blogLinks.length > 0;
   const [activeIndex, setActiveIndex] = useState(0);
-  const computed = useMemo(
-    () =>
-      buildTocPath(
-        usingBlogRail
-          ? blogLinks.map((post) => ({ id: post.href, title: post.title, depth: 2 }))
-          : items
-      ),
-    [blogLinks, items, usingBlogRail]
-  );
-  const blogRailItems = useMemo<TOCItemDef[]>(
-    () =>
-      blogLinks.map((post) => ({
-        id: post.href,
-        title: post.title,
-        depth: 2,
-      })),
-    [blogLinks]
-  );
-  const activeBlogIndex = Math.max(
-    0,
-    blogLinks.findIndex((post) => post.href === activeBlogHref)
-  );
-  const activeStartIndex = getActiveStartIndex(
-    usingBlogRail ? blogRailItems : items,
-    usingBlogRail ? activeBlogIndex : activeIndex
-  );
+  const computed = useMemo(() => buildTocPath(items), [items]);
+  const activeStartIndex = getActiveStartIndex(items, activeIndex);
   const rafRef = useRef<number | null>(null);
   const lastIndexRef = useRef(0);
 
   const handleScroll = useCallback(() => {
-    if (usingBlogRail) return;
     if (
       window.innerHeight + Math.round(window.scrollY) >=
       document.body.offsetHeight - 50
@@ -363,10 +304,9 @@ export function TableOfContents({
       lastIndexRef.current = currentIndex;
       setActiveIndex(currentIndex);
     }
-  }, [items, usingBlogRail]);
+  }, [items]);
 
   useEffect(() => {
-    if (usingBlogRail) return;
     let ticking = false;
     const onScroll = () => {
       if (ticking) return;
@@ -384,42 +324,36 @@ export function TableOfContents({
       window.removeEventListener("scroll", onScroll);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [handleScroll, usingBlogRail]);
+  }, [handleScroll]);
 
-  if (!usingBlogRail && items.length === 0) return null;
-  if (usingBlogRail && blogLinks.length === 0) return null;
+  if (items.length === 0) return null;
 
   return (
     <aside className="sticky top-20 hidden h-[calc(100vh-5rem)] overflow-y-auto py-6 pl-4 font-sans xl:block">
-      <div className="space-y-5">
-        <div className="flex items-center gap-2 px-1 text-muted-foreground">
-          <AlignLeft className="h-3.5 w-3.5" />
-          <span className="text-[11px] font-semibold uppercase tracking-normal">
-            On this page
-          </span>
+      <div className="space-y-6">
+        <div className="space-y-5">
+          <div className="flex items-center gap-2 px-1 text-muted-foreground">
+            <AlignLeft className="h-3.5 w-3.5" />
+            <span className="text-[11px] font-semibold uppercase tracking-normal">
+              On this page
+            </span>
+          </div>
+
+          <div className="relative ml-2">
+            <ActiveTocPath
+              activeEndIndex={activeIndex}
+              activeStartIndex={activeStartIndex}
+              computed={computed}
+            />
+            <ul className="relative z-0 flex w-full flex-col">
+              {items.map((item, idx) => (
+                <TOCItem key={item.id} active={idx === activeIndex} item={item} />
+              ))}
+            </ul>
+          </div>
         </div>
 
-        <div className="relative ml-2">
-          <ActiveTocPath
-            activeEndIndex={usingBlogRail ? activeBlogIndex : activeIndex}
-            activeStartIndex={activeStartIndex}
-            computed={computed}
-          />
-          <ul className="relative z-0 flex w-full flex-col">
-            {usingBlogRail
-              ? blogLinks.map((post, idx) => (
-                  <BlogRailItem
-                    key={post.href}
-                    active={idx === activeBlogIndex}
-                    href={post.href}
-                    title={post.title}
-                  />
-                ))
-              : items.map((item, idx) => (
-                  <TOCItem key={item.id} active={idx === activeIndex} item={item} />
-                ))}
-          </ul>
-        </div>
+        <BlogMindmap currentSlug={currentSlug ?? ""} />
       </div>
     </aside>
   );
