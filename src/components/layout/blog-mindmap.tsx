@@ -202,8 +202,10 @@ function MindMapCanvas({
           graphData={data}
           cooldownTicks={90}
           d3AlphaDecay={0.03}
+          autoPauseRedraw={false}
           enableNodeDrag
           enablePanInteraction
+          showPointerCursor={(object) => Boolean(object)}
           nodeRelSize={5}
           nodeColor={(node) => {
             const typed = node as MindMapNode;
@@ -224,7 +226,7 @@ function MindMapCanvas({
           }
           onNodeHover={(node) => {
             if (isDragging) return;
-            setCursor(node ? "pointer" : "grab");
+            setCursor(node ? "grab" : "default");
           }}
           nodePointerAreaPaint={(node, color, ctx, scale) => {
             const typed = node as GraphNode;
