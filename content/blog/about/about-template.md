@@ -6,6 +6,8 @@ inspiredBy: "Vengeance UI docs layout"
 date: "2026-07-24"
 ---
 
+<video controls src="/vengeance-adding-blog-demo.mp4"></video>
+
 ## This can be your About
 
 Use this page as your own About section. Replace this text with your bio, work summary, stack, and links.
@@ -53,10 +55,6 @@ isNew: true          # optional
 ### Image:
 
 ![Vengeance preview](/vengeance-image.png)
-
-### Video:
-
-<video controls src="/vengeance-demo.mp4"></video>
 
 ## Mermaid diagram
 
