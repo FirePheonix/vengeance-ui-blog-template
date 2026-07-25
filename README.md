@@ -1,12 +1,14 @@
 
 <div align="center">
 
-# ⚡ Vengeance Blog Template
+<h1> <img src="https://github.com/user-attachments/assets/3875118d-75c0-4bc7-b7a6-7a0ef6a42252" width="42" alt="Vengeance Logo"/>
+ Vengeance Blog Template </h1>
 
 Standalone blog/docs template inspired by the Vengeance UI docs shell, built with **Next.js (App Router)** and **Tailwind CSS**.
 
 <p>
-  <img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" />
+
+
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react" />
   <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss" />
@@ -16,13 +18,11 @@ Standalone blog/docs template inspired by the Vengeance UI docs shell, built wit
   <img src="https://img.shields.io/badge/Vercel-Deploy-000000?style=for-the-badge&logo=vercel" />
 </p>
 
-<video
-  src="https://raw.githubusercontent.com/FirePheonix/vengeance-ui-blog-template/main/public/vengeance-adding-blog-demo.mp4"
-  controls
-  muted
-  playsinline
-  width="100%"
-></video>
+
+
+https://github.com/user-attachments/assets/cfaa7a42-d98e-4437-b2eb-183736e86cb5
+
+
 
 </div>
 
