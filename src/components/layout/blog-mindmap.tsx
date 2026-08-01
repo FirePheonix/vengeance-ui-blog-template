@@ -186,7 +186,8 @@ function MindMapCanvas({
   );
 
   const getLabelFontSize = useCallback((node: GraphNode, scale: number) => {
-    const baseSize = node.kind === "root" ? 14 : node.kind === "category" ? 12 : 11;
+    const baseSize =
+      node.kind === "root" ? 14 : node.kind === "category" ? 12 : 11;
     return Math.max(3, baseSize / Math.pow(scale, 0.92));
   }, []);
 
