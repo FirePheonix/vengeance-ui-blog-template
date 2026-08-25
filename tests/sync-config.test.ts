@@ -37,6 +37,7 @@ describe("sync config", () => {
         },
       ],
       obsidianPublishFolder: "Blog/Drafts",
+      obsidianBlogRoot: "Blogs",
     });
 
     expect(config.vaultPath).toBe("/path/to/ObsidianVault");
@@ -58,6 +59,7 @@ describe("sync config", () => {
         },
       ],
       obsidianPublishFolder: "Blog/Drafts",
+      obsidianBlogRoot: "Blogs",
       ignore: [".obsidian"],
       syncFrontmatter: true,
       wikilinkMode: "markdown",
@@ -80,6 +82,7 @@ describe("sync config", () => {
         },
       ],
       obsidianPublishFolder: "Blog/Drafts",
+      obsidianBlogRoot: "Blogs",
       ignore: [],
       syncFrontmatter: true,
       wikilinkMode: "markdown",

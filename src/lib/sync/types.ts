@@ -17,6 +17,7 @@ export type SyncConfig = {
   vaultPath: string;
   mappings: FolderMapping[];
   obsidianPublishFolder: string;
+  obsidianBlogRoot: string;
   ignore: string[];
   syncFrontmatter: boolean;
   wikilinkMode: WikilinkMode;

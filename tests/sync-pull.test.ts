@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { blogFileToObsidianDraft } from "../src/lib/sync/blog-to-obsidian";
-import { pushVengeanceToObsidian } from "../src/lib/sync/push-to-obsidian";
+import { pushVengeanceToObsidian, pullBlogByTarget } from "../src/lib/sync/push-to-obsidian";
 import type { SyncConfig, SyncManifest } from "../src/lib/sync/types";
 
 const tempDirs: string[] = [];
@@ -78,6 +78,7 @@ Updated in blog`,
         },
       ],
       obsidianPublishFolder: "Blog/Drafts",
+      obsidianBlogRoot: "Blogs",
       ignore: [".obsidian"],
       syncFrontmatter: true,
       wikilinkMode: "markdown",
@@ -112,5 +113,55 @@ Updated in blog`,
     expect(obsidianNote).toContain("Updated in blog");
     expect(obsidianNote).not.toContain("vengeance:");
     expect(manifest.entries[0].lastSource).toBe("vengeance");
+  });
+
+  it("pulls one vengeance blog into Blogs/category/file.md", () => {
+    const root = makeTempRoot();
+    const vault = path.join(root, "vault");
+    const blogDir = path.join(root, "content", "blog", "frontend");
+    fs.mkdirSync(blogDir, { recursive: true });
+
+    fs.writeFileSync(
+      path.join(blogDir, "how-browsers-work.md"),
+      `---
+title: How Browsers Work
+description: A classic post
+---
+
+## Intro
+Browser internals`,
+      "utf8",
+    );
+
+    const config: SyncConfig = {
+      vaultPath: vault,
+      mappings: [
+        {
+          obsidianFolder: "Blogs/Drafts",
+          blogCategory: "frontend",
+          direction: "bidirectional",
+        },
+      ],
+      obsidianPublishFolder: "Blogs/Drafts",
+      obsidianBlogRoot: "Blogs",
+      ignore: [".obsidian"],
+      syncFrontmatter: true,
+      wikilinkMode: "markdown",
+    };
+
+    const manifest = { version: 1 as const, entries: [] };
+    const result = pullBlogByTarget(
+      root,
+      config,
+      manifest,
+      "frontend/how-browsers-work.md",
+    );
+
+    expect(result.created).toEqual(["Blogs/frontend/how-browsers-work.md"]);
+    expect(
+      fs.existsSync(
+        path.join(vault, "Blogs", "frontend", "how-browsers-work.md"),
+      ),
+    ).toBe(true);
   });
 });

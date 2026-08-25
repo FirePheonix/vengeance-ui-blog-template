@@ -13,6 +13,7 @@
     }
   ],
   "obsidianPublishFolder": "Blog/Published",
+  "obsidianBlogRoot": "Blogs",
   "ignore": [".obsidian", "Templates", "Daily"],
   "syncFrontmatter": true,
   "wikilinkMode": "markdown"

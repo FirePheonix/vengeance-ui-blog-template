@@ -92,10 +92,18 @@ export function validateSyncConfig(value: unknown): SyncConfig {
     throw new Error("wikilinkMode must be 'markdown' or 'plain'");
   }
 
+  const obsidianBlogRoot = value.obsidianBlogRoot ?? "Blogs";
+  if (typeof obsidianBlogRoot !== "string" || !obsidianBlogRoot.trim()) {
+    throw new Error("obsidianBlogRoot must be a non-empty string when provided");
+  }
+
   return {
     vaultPath: pathNormalize(vaultPath),
     mappings,
     obsidianPublishFolder: obsidianPublishFolder
+      .replace(/\\/g, "/")
+      .replace(/^\/+|\/+$/g, ""),
+    obsidianBlogRoot: obsidianBlogRoot
       .replace(/\\/g, "/")
       .replace(/^\/+|\/+$/g, ""),
     ignore: ignore ?? [".obsidian", "Templates", "Daily"],
@@ -120,6 +128,7 @@ export const DEFAULT_SYNC_CONFIG: Omit<SyncConfig, "vaultPath"> = {
     },
   ],
   obsidianPublishFolder: "Blog/Drafts",
+  obsidianBlogRoot: "Blogs",
   ignore: [".obsidian", "Templates", "Daily"],
   syncFrontmatter: true,
   wikilinkMode: "markdown",

@@ -20,6 +20,10 @@ import {
 } from "./blog-to-obsidian";
 import { hashContent } from "./hash";
 import type { PushResult } from "./push-to-vengeance";
+import {
+  buildObsidianPathForBlog,
+  resolveBlogTarget,
+} from "./resolve-blog-target";
 
 const BLOG_ROOT = path.join("content", "blog");
 
@@ -60,8 +64,114 @@ function readVengeanceMeta(source: string) {
   return parsed.data.vengeance as VengeanceFrontmatterSync | undefined;
 }
 
-function defaultObsidianPath(mapping: FolderMapping, blogFileName: string) {
-  return `${mapping.obsidianFolder}/${blogFileName}`.replace(/\\/g, "/");
+function resolveObsidianPath(
+  config: SyncConfig,
+  blogSlug: string,
+  fileName: string,
+  existingObsidianPath?: string,
+  metaObsidianPath?: string,
+) {
+  return (
+    existingObsidianPath ??
+    metaObsidianPath ??
+    buildObsidianPathForBlog(config.obsidianBlogRoot, blogSlug)
+  );
+}
+
+function syncOneBlogPost(
+  rootDir: string,
+  config: SyncConfig,
+  manifest: SyncManifest,
+  blogPath: string,
+  blogSlug: string,
+  result: PushResult,
+  options: { force?: boolean; obsidianPathOverride?: string } = {},
+) {
+  const blogAbsPath = path.join(rootDir, blogPath);
+  const source = fs.readFileSync(blogAbsPath, "utf8");
+  const body = matter(source).content.trim();
+  const contentHash = hashContent(body);
+  const existing = findManifestEntryByBlogPath(manifest, blogPath);
+  const meta = readVengeanceMeta(source);
+  const syncId = existing?.id ?? meta?.syncId ?? randomUUID();
+  const obsidianPath =
+    options.obsidianPathOverride ??
+    resolveObsidianPath(
+      config,
+      blogSlug,
+      path.basename(blogAbsPath),
+      existing?.obsidianPath,
+      meta?.obsidianPath,
+    );
+  const obsidianAbs = path.join(config.vaultPath, obsidianPath);
+
+  if (
+    !options.force &&
+    existing &&
+    existing.contentHash === contentHash &&
+    fs.existsSync(obsidianAbs)
+  ) {
+    result.skipped.push(
+      `${blogSlug} (already in sync — edit the blog file, then pull again)`,
+    );
+    return;
+  }
+
+  const draft = blogFileToObsidianDraft(
+    source,
+    blogPath,
+    blogSlug,
+    obsidianPath,
+    syncId,
+  );
+
+  fs.mkdirSync(path.dirname(obsidianAbs), { recursive: true });
+  const isNew = !fs.existsSync(obsidianAbs);
+  fs.writeFileSync(obsidianAbs, draft.markdown, "utf8");
+  fs.writeFileSync(blogAbsPath, blogDraftToFileContent(draft, source), "utf8");
+
+  const manifestEntry = {
+    id: syncId,
+    obsidianPath,
+    blogPath,
+    blogSlug,
+    contentHash,
+    lastSyncedAt: draft.syncMeta.lastSyncedAt,
+    lastSource: "vengeance" as const,
+  };
+
+  if (existing) {
+    manifest.entries = manifest.entries.map((item) =>
+      item.id === existing.id ? manifestEntry : item,
+    );
+    result[isNew ? "created" : "updated"].push(obsidianPath);
+  } else {
+    manifest.entries.push(manifestEntry);
+    result[isNew ? "created" : "updated"].push(obsidianPath);
+  }
+}
+
+export function pullBlogByTarget(
+  rootDir: string,
+  config: SyncConfig,
+  manifest: SyncManifest,
+  targetInput: string,
+): PushResult {
+  const target = resolveBlogTarget(rootDir, targetInput);
+  const result: PushResult = { created: [], updated: [], skipped: [] };
+
+  syncOneBlogPost(
+    rootDir,
+    config,
+    manifest,
+    target.blogPath,
+    target.blogSlug,
+    result,
+    { force: true },
+  );
+
+  saveSyncManifest(rootDir, manifest);
+  return result;
 }
 
 export function pushVengeanceToObsidian(
@@ -87,41 +197,14 @@ export function pushVengeanceToObsidian(
     }
 
     handledBlogPaths.add(entry.blogPath.replace(/\\/g, "/"));
-
-    const source = fs.readFileSync(blogAbsPath, "utf8");
-    const body = matter(source).content.trim();
-    const contentHash = hashContent(body);
-    const obsidianAbs = path.join(config.vaultPath, entry.obsidianPath);
-
-    if (entry.contentHash === contentHash && fs.existsSync(obsidianAbs)) {
-      result.skipped.push(`${entry.blogPath} (unchanged)`);
-      continue;
-    }
-
-    const draft = blogFileToObsidianDraft(
-      source,
+    syncOneBlogPost(
+      rootDir,
+      config,
+      manifest,
       entry.blogPath,
       entry.blogSlug,
-      entry.obsidianPath,
-      entry.id,
+      result,
     );
-
-    fs.mkdirSync(path.dirname(obsidianAbs), { recursive: true });
-    const isNew = !fs.existsSync(obsidianAbs);
-    fs.writeFileSync(obsidianAbs, draft.markdown, "utf8");
-    fs.writeFileSync(blogAbsPath, blogDraftToFileContent(draft, source), "utf8");
-
-    Object.assign(entry, {
-      contentHash,
-      lastSyncedAt: draft.syncMeta.lastSyncedAt,
-      lastSource: "vengeance" as const,
-    });
-
-    if (isNew) {
-      result.created.push(entry.obsidianPath);
-    } else {
-      result.updated.push(entry.obsidianPath);
-    }
   }
 
   for (const mapping of config.mappings) {
@@ -137,47 +220,8 @@ export function pushVengeanceToObsidian(
         continue;
       }
 
-      const existing = findManifestEntryByBlogPath(manifest, blogPath);
-      const syncId = existing?.id ?? meta.syncId ?? randomUUID();
-      const obsidianPath =
-        existing?.obsidianPath ??
-        meta.obsidianPath ??
-        defaultObsidianPath(mapping, path.basename(blogAbsPath));
       const blogSlug = `${mapping.blogCategory}/${path.basename(blogAbsPath, ".md")}`;
-      const draft = blogFileToObsidianDraft(
-        source,
-        blogPath,
-        blogSlug,
-        obsidianPath,
-        syncId,
-      );
-      const contentHash = hashContent(matter(source).content.trim());
-      const obsidianAbs = path.join(config.vaultPath, obsidianPath);
-
-      fs.mkdirSync(path.dirname(obsidianAbs), { recursive: true });
-      const isNew = !fs.existsSync(obsidianAbs);
-      fs.writeFileSync(obsidianAbs, draft.markdown, "utf8");
-      fs.writeFileSync(blogAbsPath, blogDraftToFileContent(draft, source), "utf8");
-
-      const manifestEntry = {
-        id: syncId,
-        obsidianPath,
-        blogPath,
-        blogSlug,
-        contentHash,
-        lastSyncedAt: draft.syncMeta.lastSyncedAt,
-        lastSource: "vengeance" as const,
-      };
-
-      if (existing) {
-        manifest.entries = manifest.entries.map((item) =>
-          item.id === existing.id ? manifestEntry : item,
-        );
-        result.updated.push(obsidianPath);
-      } else {
-        manifest.entries.push(manifestEntry);
-        result.created.push(obsidianPath);
-      }
+      syncOneBlogPost(rootDir, config, manifest, blogPath, blogSlug, result);
     }
   }
 
@@ -185,8 +229,13 @@ export function pushVengeanceToObsidian(
   return result;
 }
 
-export function runPushToObsidian(rootDir: string) {
+export function runPushToObsidian(rootDir: string, target?: string) {
   const config = loadSyncConfig(rootDir);
   const manifest = loadSyncManifest(rootDir);
+
+  if (target?.trim()) {
+    return pullBlogByTarget(rootDir, config, manifest, target);
+  }
+
   return pushVengeanceToObsidian(rootDir, config, manifest);
 }

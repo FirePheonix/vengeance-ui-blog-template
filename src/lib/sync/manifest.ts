@@ -120,3 +120,11 @@ export function findManifestEntryByBlogPath(
   const normalized = blogPath.replace(/\\/g, "/");
   return manifest.entries.find((entry) => entry.blogPath === normalized);
 }
+
+export function findManifestEntryByBlogSlug(
+  manifest: SyncManifest,
+  blogSlug: string,
+) {
+  const normalized = blogSlug.replace(/\\/g, "/");
+  return manifest.entries.find((entry) => entry.blogSlug === normalized);
+}

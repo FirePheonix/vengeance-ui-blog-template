@@ -8,11 +8,14 @@ import { runPushToObsidian } from "../src/lib/sync/push-to-obsidian";
 
 const rootDir = path.resolve(process.cwd());
 
-function printResult(label: string, result: {
-  created: string[];
-  updated: string[];
-  skipped: string[];
-}) {
+function printResult(
+  label: string,
+  result: {
+    created: string[];
+    updated: string[];
+    skipped: string[];
+  },
+) {
   console.log(label);
   if (result.created.length) {
     console.log(`Created:\n  ${result.created.join("\n  ")}`);
@@ -25,23 +28,36 @@ function printResult(label: string, result: {
   }
 }
 
+function getOptionalTarget() {
+  const cliArg = process.argv[3]?.trim();
+  if (cliArg && !cliArg.startsWith("-")) {
+    return cliArg;
+  }
+
+  const npmPath = process.env.npm_config_path?.trim();
+  if (npmPath) {
+    return npmPath;
+  }
+
+  return undefined;
+}
+
 function printUsage() {
   console.log(`Obsidian sync commands:
 
-  npm run sync:status   Check vault connection and note counts
-  npm run sync:push     Copy notes from Obsidian into the blog
-  npm run sync:pull     Copy blog posts back into Obsidian
+  npm run sync:status
+  npm run sync:push
+  npm run sync:pull
+
+  Pull ONE Vengeance blog into Obsidian:
+  npm run sync:pull --path=frontend/how-browsers-work.md
+
+  Push ONE Obsidian note into the blog:
+  npm run sync:push --path=Blogs/Drafts/my-first-post.md
+
+  Path pattern:
+  content/blog/frontend/example.md  ->  Blogs/frontend/example.md
 `);
-}
-
-function getPushTarget() {
-  const args = process.argv.slice(3);
-
-  if (args[0] === "--to") {
-    return args[1];
-  }
-
-  return args[0];
 }
 
 const command = process.argv[2] ?? "help";
@@ -51,6 +67,8 @@ try {
     printUsage();
     process.exit(0);
   }
+
+  const target = getOptionalTarget();
 
   if (command === "status") {
     const status = getSyncStatus(rootDir);
@@ -64,13 +82,19 @@ try {
     process.exit(0);
   }
 
-  if (command === "push" && getPushTarget() === "vengeance") {
-    printResult("Obsidian -> Vengeance sync complete", runPushToVengeance(rootDir));
+  if (command === "push") {
+    printResult(
+      "Obsidian -> Vengeance sync complete",
+      runPushToVengeance(rootDir, target),
+    );
     process.exit(0);
   }
 
-  if (command === "pull" || (command === "push" && getPushTarget() === "obsidian")) {
-    printResult("Vengeance -> Obsidian sync complete", runPushToObsidian(rootDir));
+  if (command === "pull") {
+    printResult(
+      "Vengeance -> Obsidian sync complete",
+      runPushToObsidian(rootDir, target),
+    );
     process.exit(0);
   }
 
