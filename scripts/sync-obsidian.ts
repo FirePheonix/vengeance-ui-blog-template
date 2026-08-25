@@ -4,14 +4,33 @@ import {
   getSyncStatus,
   runPushToVengeance,
 } from "../src/lib/sync/push-to-vengeance";
+import { runPushToObsidian } from "../src/lib/sync/push-to-obsidian";
 
 const rootDir = path.resolve(process.cwd());
+
+function printResult(label: string, result: {
+  created: string[];
+  updated: string[];
+  skipped: string[];
+}) {
+  console.log(label);
+  if (result.created.length) {
+    console.log(`Created:\n  ${result.created.join("\n  ")}`);
+  }
+  if (result.updated.length) {
+    console.log(`Updated:\n  ${result.updated.join("\n  ")}`);
+  }
+  if (result.skipped.length) {
+    console.log(`Skipped:\n  ${result.skipped.join("\n  ")}`);
+  }
+}
 
 function printUsage() {
   console.log(`Obsidian sync commands:
 
   npm run sync:status   Check vault connection and note counts
   npm run sync:push     Copy notes from Obsidian into the blog
+  npm run sync:pull     Copy blog posts back into Obsidian
 `);
 }
 
@@ -46,17 +65,12 @@ try {
   }
 
   if (command === "push" && getPushTarget() === "vengeance") {
-    const result = runPushToVengeance(rootDir);
-    console.log("Obsidian -> Vengeance sync complete");
-    if (result.created.length) {
-      console.log(`Created:\n  ${result.created.join("\n  ")}`);
-    }
-    if (result.updated.length) {
-      console.log(`Updated:\n  ${result.updated.join("\n  ")}`);
-    }
-    if (result.skipped.length) {
-      console.log(`Skipped:\n  ${result.skipped.join("\n  ")}`);
-    }
+    printResult("Obsidian -> Vengeance sync complete", runPushToVengeance(rootDir));
+    process.exit(0);
+  }
+
+  if (command === "pull" || (command === "push" && getPushTarget() === "obsidian")) {
+    printResult("Vengeance -> Obsidian sync complete", runPushToObsidian(rootDir));
     process.exit(0);
   }
 

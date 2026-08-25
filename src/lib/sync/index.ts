@@ -5,5 +5,7 @@ export * from "./manifest";
 export * from "./hash";
 export * from "./parse-obsidian";
 export * from "./obsidian-to-blog";
+export * from "./blog-to-obsidian";
 export * from "./push-to-vengeance";
+export * from "./push-to-obsidian";
 export * from "./types";

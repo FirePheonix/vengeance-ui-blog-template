@@ -17,6 +17,7 @@
     "test:ci": "npm run test:lint && npm run test && npm run test:build",
     "sync:status": "tsx scripts/sync-obsidian.ts status",
     "sync:push": "tsx scripts/sync-obsidian.ts push vengeance",
+    "sync:pull": "tsx scripts/sync-obsidian.ts pull",
     "sync:obsidian:status": "npm run sync:status",
     "sync:obsidian:push": "npm run sync:push",
     "vercel:pull": "vercel pull",
