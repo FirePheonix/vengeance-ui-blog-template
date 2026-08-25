@@ -1,0 +1,116 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
+import { convertWikilinks } from "../src/lib/sync/parse-obsidian";
+import {
+  blogDraftToFileContent,
+  obsidianNoteToBlogDraft,
+} from "../src/lib/sync/obsidian-to-blog";
+import { pushObsidianToVengeance } from "../src/lib/sync/push-to-vengeance";
+import type { SyncConfig } from "../src/lib/sync/types";
+import { createEmptyManifest } from "../src/lib/sync/manifest";
+
+const tempDirs: string[] = [];
+
+function makeTempRoot() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "vengeance-sync-push-"));
+  tempDirs.push(dir);
+  return dir;
+}
+
+afterEach(() => {
+  for (const dir of tempDirs.splice(0)) {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+describe("obsidian parsing", () => {
+  it("converts wikilinks to markdown links", () => {
+    expect(convertWikilinks("Try [[create a link]]", "markdown")).toBe(
+      "Try [create a link](create-a-link)",
+    );
+  });
+
+  it("builds blog draft from obsidian note", () => {
+    const draft = obsidianNoteToBlogDraft(
+      "---\ntitle: Hello\n---\n\n## Intro\nBody",
+      "Blog/Drafts/hello.md",
+      {
+        vaultPath: "E:/brain/brain",
+        mappings: [],
+        obsidianPublishFolder: "Blog/Drafts",
+        ignore: [],
+        syncFrontmatter: true,
+        wikilinkMode: "markdown",
+      },
+    );
+
+    expect(draft.title).toBe("Hello");
+    expect(draft.markdown).toContain("## Intro");
+  });
+});
+
+describe("push obsidian to vengeance", () => {
+  it("writes blog files and updates manifest", () => {
+    const root = makeTempRoot();
+    const vault = path.join(root, "vault");
+    const noteDir = path.join(vault, "Blog", "Drafts");
+    fs.mkdirSync(noteDir, { recursive: true });
+    fs.mkdirSync(path.join(root, ".vengeance"), { recursive: true });
+
+    fs.writeFileSync(
+      path.join(noteDir, "my-first-post.md"),
+      "---\ntitle: My First Post\ndescription: From Obsidian\n---\n\n## Intro\nHello",
+      "utf8",
+    );
+
+    const config: SyncConfig = {
+      vaultPath: vault,
+      mappings: [
+        {
+          obsidianFolder: "Blog/Drafts",
+          blogCategory: "frontend",
+          direction: "bidirectional",
+        },
+      ],
+      obsidianPublishFolder: "Blog/Drafts",
+      ignore: [".obsidian"],
+      syncFrontmatter: true,
+      wikilinkMode: "markdown",
+    };
+
+    const manifest = createEmptyManifest();
+    const result = pushObsidianToVengeance(root, config, manifest);
+
+    expect(result.created).toEqual(["content/blog/frontend/my-first-post.md"]);
+    expect(fs.existsSync(path.join(root, "content/blog/frontend/my-first-post.md"))).toBe(true);
+
+    const output = fs.readFileSync(
+      path.join(root, "content/blog/frontend/my-first-post.md"),
+      "utf8",
+    );
+    expect(output).toContain("title: My First Post");
+    expect(output).toContain("obsidianPath: Blog/Drafts/my-first-post.md");
+    expect(manifest.entries).toHaveLength(1);
+  });
+
+  it("serializes sync metadata into blog frontmatter", () => {
+    const draft = obsidianNoteToBlogDraft(
+      "# Title\n\nBody",
+      "Blog/Drafts/test.md",
+      {
+        vaultPath: "E:/brain/brain",
+        mappings: [],
+        obsidianPublishFolder: "Blog/Drafts",
+        ignore: [],
+        syncFrontmatter: true,
+        wikilinkMode: "markdown",
+      },
+    );
+
+    const serialized = blogDraftToFileContent(draft, "sync-id-1");
+    expect(serialized).toContain("syncId: sync-id-1");
+    expect(serialized).toContain("source: obsidian");
+  });
+});
