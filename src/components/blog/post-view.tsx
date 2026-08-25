@@ -11,7 +11,11 @@ import {
 } from "@/components/blog/article";
 import { MermaidDiagram } from "@/components/blog/mermaid-diagram";
 import type { BlogPost, TOCHeading } from "@/lib/blog-types";
-import { getAdjacentPosts } from "@/lib/blog-server";
+import { getAdjacentPosts, getAllPosts } from "@/lib/blog-server";
+import {
+  normalizeBlogMarkdownForSite,
+  postsToLinkIndex,
+} from "@/lib/blog-links";
 import { getPostThumbnail, resolveThumbnailSrc } from "@/lib/thumbnail";
 
 function flattenText(node: React.ReactNode): string {
@@ -47,7 +51,10 @@ export function BlogPostView({
   headings: TOCHeading[];
 }) {
   const { prev, next } = getAdjacentPosts(post.slug);
-  const safeMarkdown = stripScriptTags(markdown);
+  const linkIndex = postsToLinkIndex(getAllPosts());
+  const safeMarkdown = stripScriptTags(
+    normalizeBlogMarkdownForSite(markdown, linkIndex),
+  );
   const thumbnail = getPostThumbnail(post);
   let headingIndex = 0;
 

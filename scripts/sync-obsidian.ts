@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import path from "node:path";
+import { loadEnvFiles } from "../src/lib/sync/load-env";
 import {
   getSyncStatus,
   runPushToVengeance,
@@ -7,6 +8,7 @@ import {
 import { runPushToObsidian } from "../src/lib/sync/push-to-obsidian";
 
 const rootDir = path.resolve(process.cwd());
+loadEnvFiles(rootDir);
 
 function printResult(
   label: string,

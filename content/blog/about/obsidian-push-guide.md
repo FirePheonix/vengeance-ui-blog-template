@@ -7,7 +7,7 @@ date: '2026-08-26'
 vengeance:
   syncId: 9953524e-52b4-4344-a486-a9e4f2d974bf
   obsidianPath: Blogs/about/obsidian-push-guide.md
-  lastSyncedAt: '2026-08-25T19:47:30.033Z'
+  lastSyncedAt: '2026-08-25T21:24:37.336Z'
   source: vengeance
 ---
 
@@ -78,6 +78,8 @@ npx tsx scripts/sync-obsidian.ts push "Blogs/Drafts/my-react-tips.md"
 ```
 
 **You get** `content/blog/frontend/my-react-tips.md` → open `/frontend/my-react-tips`.
+
+Use `[[how-browsers-work]]` in Obsidian to link another note — push converts it to a blog route. See [Pull from Vengeance into Obsidian](/about/obsidian-pull-guide) for the reverse direction.
 
 ## Where to write
 

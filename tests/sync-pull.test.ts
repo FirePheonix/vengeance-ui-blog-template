@@ -41,6 +41,8 @@ Updated in blog`,
       "frontend/example-post",
       "Blog/Drafts/example-post.md",
       "abc",
+      [],
+      "https://vengeance-blog-template.vercel.app",
     );
 
     expect(draft.markdown).toContain("title: Example Post");
@@ -157,6 +159,112 @@ Body for ${slug}`,
       "Blogs/frontend/post-a.md",
     ]);
     expect(manifest.entries).toHaveLength(2);
+  });
+
+  it("converts internal blog links to wikilinks on pull", () => {
+    const root = makeTempRoot();
+    const vault = path.join(root, "vault");
+    const frontendDir = path.join(root, "content", "blog", "frontend");
+    const systemsDir = path.join(root, "content", "blog", "systems");
+    fs.mkdirSync(frontendDir, { recursive: true });
+    fs.mkdirSync(systemsDir, { recursive: true });
+
+    fs.writeFileSync(
+      path.join(frontendDir, "how-browsers-work.md"),
+      `---
+title: How Browsers Work
+---
+
+See [Why Redis Is Fast](/systems/why-redis-is-fast).`,
+      "utf8",
+    );
+    fs.writeFileSync(
+      path.join(systemsDir, "why-redis-is-fast.md"),
+      `---
+title: Why Redis Is Fast
+---
+
+Body`,
+      "utf8",
+    );
+
+    const config: SyncConfig = {
+      vaultPath: vault,
+      mappings: [],
+      obsidianPublishFolder: "Blogs/Drafts",
+      obsidianBlogRoot: "Blogs",
+      ignore: [".obsidian"],
+      syncFrontmatter: true,
+      wikilinkMode: "markdown",
+    };
+
+    process.env.NEXT_PUBLIC_SITE_URL = "https://blog.test";
+    const manifest = { version: 1 as const, entries: [] };
+    pullBlogByTarget(root, config, manifest, "frontend/how-browsers-work.md");
+
+    const obsidianNote = fs.readFileSync(
+      path.join(vault, "Blogs", "frontend", "how-browsers-work.md"),
+      "utf8",
+    );
+    expect(obsidianNote).toContain("[[why-redis-is-fast]]");
+    delete process.env.NEXT_PUBLIC_SITE_URL;
+  });
+
+  it("keeps blog markdown links when pulling to obsidian", () => {
+    const root = makeTempRoot();
+    const vault = path.join(root, "vault");
+    const blogDir = path.join(root, "content", "blog", "frontend");
+    fs.mkdirSync(blogDir, { recursive: true });
+
+    const blogSource = `---
+title: How Browsers Work
+---
+
+See [Why Redis Is Fast](/systems/why-redis-is-fast).`;
+
+    fs.writeFileSync(
+      path.join(blogDir, "how-browsers-work.md"),
+      blogSource,
+      "utf8",
+    );
+    fs.mkdirSync(path.join(root, "content", "blog", "systems"), {
+      recursive: true,
+    });
+    fs.writeFileSync(
+      path.join(root, "content", "blog", "systems", "why-redis-is-fast.md"),
+      "---\ntitle: Why Redis Is Fast\n---\n\nBody",
+      "utf8",
+    );
+
+    const config: SyncConfig = {
+      vaultPath: vault,
+      mappings: [],
+      obsidianPublishFolder: "Blogs/Drafts",
+      obsidianBlogRoot: "Blogs",
+      ignore: [".obsidian"],
+      syncFrontmatter: true,
+      wikilinkMode: "markdown",
+    };
+
+    process.env.NEXT_PUBLIC_SITE_URL = "https://blog.test";
+    const manifest = { version: 1 as const, entries: [] };
+    pullBlogByTarget(root, config, manifest, "frontend/how-browsers-work.md");
+
+    const blogAfter = fs.readFileSync(
+      path.join(blogDir, "how-browsers-work.md"),
+      "utf8",
+    );
+    expect(blogAfter).toContain(
+      "[Why Redis Is Fast](/systems/why-redis-is-fast)",
+    );
+    expect(blogAfter).not.toContain("[[why-redis-is-fast]]");
+
+    const obsidianNote = fs.readFileSync(
+      path.join(vault, "Blogs", "frontend", "how-browsers-work.md"),
+      "utf8",
+    );
+    expect(obsidianNote).toContain("[[why-redis-is-fast]]");
+    delete process.env.NEXT_PUBLIC_SITE_URL;
   });
 
   it("pulls one vengeance blog into Blogs/category/file.md", () => {

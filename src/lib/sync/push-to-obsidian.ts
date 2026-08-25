@@ -24,6 +24,9 @@ import {
   collectAllBlogPosts,
   resolveBlogTarget,
 } from "./resolve-blog-target";
+import { buildBlogLinkIndex } from "./link-index";
+import { loadEnvFiles } from "./load-env";
+import { getSiteUrl } from "@/lib/site-url";
 
 function readVengeanceMeta(source: string) {
   const parsed = matter(source);
@@ -50,6 +53,8 @@ function syncOneBlogPost(
   blogPath: string,
   blogSlug: string,
   result: PushResult,
+  linkIndex: ReturnType<typeof buildBlogLinkIndex>,
+  siteUrl: string,
   options: { force?: boolean } = {},
 ) {
   const blogAbsPath = path.join(rootDir, blogPath);
@@ -83,6 +88,8 @@ function syncOneBlogPost(
     blogSlug,
     obsidianPath,
     syncId,
+    linkIndex,
+    siteUrl,
   );
 
   fs.mkdirSync(path.dirname(obsidianAbs), { recursive: true });
@@ -123,6 +130,8 @@ export function pullBlogByTarget(
 ): PushResult {
   const target = resolveBlogTarget(rootDir, targetInput);
   const result: PushResult = { created: [], updated: [], skipped: [] };
+  const linkIndex = buildBlogLinkIndex(rootDir);
+  const siteUrl = getSiteUrl();
 
   syncOneBlogPost(
     rootDir,
@@ -131,6 +140,8 @@ export function pullBlogByTarget(
     target.blogPath,
     target.blogSlug,
     result,
+    linkIndex,
+    siteUrl,
     { force: true },
   );
 
@@ -145,6 +156,8 @@ export function pushVengeanceToObsidian(
 ): PushResult {
   const result: PushResult = { created: [], updated: [], skipped: [] };
   const blogPosts = collectAllBlogPosts(rootDir);
+  const linkIndex = buildBlogLinkIndex(rootDir);
+  const siteUrl = getSiteUrl();
 
   if (blogPosts.length === 0) {
     result.skipped.push("No blog posts found in content/blog/");
@@ -160,6 +173,8 @@ export function pushVengeanceToObsidian(
       post.blogPath,
       post.blogSlug,
       result,
+      linkIndex,
+      siteUrl,
     );
   }
 
@@ -168,6 +183,7 @@ export function pushVengeanceToObsidian(
 }
 
 export function runPushToObsidian(rootDir: string, target?: string) {
+  loadEnvFiles(rootDir);
   const config = loadSyncConfig(rootDir);
   const manifest = loadSyncManifest(rootDir);
 

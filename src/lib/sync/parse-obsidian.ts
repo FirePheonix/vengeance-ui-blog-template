@@ -1,27 +1,13 @@
 import type { WikilinkMode } from "./types";
+import { convertWikilinksToBlogLinks } from "./link-conversion";
+import type { BlogLinkIndexEntry } from "./link-index";
 
-export function convertWikilinks(markdown: string, mode: WikilinkMode) {
-  if (mode === "plain") {
-    return markdown.replace(
-      /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,
-      (_match, target, label) => {
-        return label ?? target;
-      },
-    );
-  }
-
-  return markdown.replace(
-    /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,
-    (_match, target, label) => {
-      const text = (label ?? target).trim();
-      const slug = String(target)
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-");
-      return `[${text}](${slug || "#"})`;
-    },
-  );
+export function convertWikilinks(
+  markdown: string,
+  mode: WikilinkMode,
+  index: BlogLinkIndexEntry[] = [],
+) {
+  return convertWikilinksToBlogLinks(markdown, index, mode);
 }
 
 export function slugifyFileName(fileName: string) {

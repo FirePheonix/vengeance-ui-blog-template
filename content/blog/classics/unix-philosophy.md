@@ -1,9 +1,14 @@
 ---
-title: "Unix Philosophy in Modern Apps"
-description: "Small focused parts with composable interfaces still win."
-author: "Systems Notes"
-inspiredBy: "Unix design principles"
-date: "1987-06-01"
+title: Unix Philosophy in Modern Apps
+description: Small focused parts with composable interfaces still win.
+author: Systems Notes
+inspiredBy: Unix design principles
+date: '1987-06-01'
+vengeance:
+  syncId: 9f798cea-e4c9-4f56-8e66-d84184a2400d
+  obsidianPath: Blogs/classics/unix-philosophy.md
+  lastSyncedAt: '2026-08-25T21:24:37.351Z'
+  source: vengeance
 ---
 
 ## Do one thing well
@@ -16,4 +21,4 @@ Stable contracts reduce coupling and improve replaceability.
 
 ## Keep outputs predictable
 
-Deterministic behavior is easier to debug and monitor.
+Deterministic behavior is easier to debug and monitor. The same composability mindset shows up in [Maker's Schedule, Manager's Schedule](/classics/makers-schedule) when designing team workflows.
