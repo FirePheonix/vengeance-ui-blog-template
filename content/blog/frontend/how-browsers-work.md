@@ -4,11 +4,6 @@ description: From response bytes to painted pixels.
 author: Web Platform
 inspiredBy: Browser internals essays
 date: '2011-08-01'
-vengeance:
-  syncId: 4d331cb1-1fa0-4f14-a7ad-2b52524233a6
-  obsidianPath: Blogs/frontend/how-browsers-work.md
-  lastSyncedAt: '2026-08-25T21:24:37.358Z'
-  source: vengeance
 ---
 
 ## Navigation

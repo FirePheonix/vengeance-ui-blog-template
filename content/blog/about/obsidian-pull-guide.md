@@ -4,11 +4,6 @@ description: Bring repo blog posts into your vault so you can edit them in Obsid
 author: Vengeance Blog
 inspiredBy: Obsidian sync workflow
 date: '2026-08-26'
-vengeance:
-  syncId: 915f7982-dfe0-4a2e-988b-eafb0d82ebbb
-  obsidianPath: Blogs/about/obsidian-pull-guide.md
-  lastSyncedAt: '2026-08-25T21:33:17.367Z'
-  source: vengeance
 ---
 
 ## Setup first

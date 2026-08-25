@@ -4,11 +4,6 @@ description: Find and fix unnecessary renders in real screens.
 author: React Notes
 inspiredBy: Profiling workflows
 date: '2024-04-03'
-vengeance:
-  syncId: 4ce753e7-b6dc-40eb-a924-1ddff088c2c6
-  obsidianPath: Blogs/frontend/react-render-performance-checklist.md
-  lastSyncedAt: '2026-08-25T21:24:37.360Z'
-  source: vengeance
 ---
 
 ## Measure first

@@ -267,6 +267,41 @@ See [Why Redis Is Fast](/systems/why-redis-is-fast).`;
     delete process.env.NEXT_PUBLIC_SITE_URL;
   });
 
+  it("does not write sync frontmatter back into the blog repo on pull", () => {
+    const root = makeTempRoot();
+    const vault = path.join(root, "vault");
+    const blogDir = path.join(root, "content", "blog", "frontend");
+    fs.mkdirSync(blogDir, { recursive: true });
+
+    const blogSource = `---
+title: How Browsers Work
+---
+
+Body`;
+
+    fs.writeFileSync(path.join(blogDir, "how-browsers-work.md"), blogSource, "utf8");
+
+    const config: SyncConfig = {
+      vaultPath: vault,
+      mappings: [],
+      obsidianPublishFolder: "Blogs/Drafts",
+      obsidianBlogRoot: "Blogs",
+      ignore: [".obsidian"],
+      syncFrontmatter: true,
+      wikilinkMode: "markdown",
+    };
+
+    const manifest = { version: 1 as const, entries: [] };
+    pullBlogByTarget(root, config, manifest, "frontend/how-browsers-work.md");
+
+    const blogAfter = fs.readFileSync(
+      path.join(blogDir, "how-browsers-work.md"),
+      "utf8",
+    );
+    expect(blogAfter).toBe(blogSource);
+    expect(blogAfter).not.toContain("vengeance:");
+  });
+
   it("pulls one vengeance blog into Blogs/category/file.md", () => {
     const root = makeTempRoot();
     const vault = path.join(root, "vault");

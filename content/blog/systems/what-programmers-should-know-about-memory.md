@@ -4,11 +4,6 @@ description: Why cache behavior dominates many real-world performance outcomes.
 author: Performance
 inspiredBy: Ulrich Drepper (2007)
 date: '2007-11-21'
-vengeance:
-  syncId: cbda9151-f57d-4c5a-8f8d-b53ec697c8cb
-  obsidianPath: Blogs/systems/what-programmers-should-know-about-memory.md
-  lastSyncedAt: '2026-08-25T21:24:37.369Z'
-  source: vengeance
 ---
 
 ## Memory hierarchy

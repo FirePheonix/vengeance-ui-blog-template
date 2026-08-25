@@ -16,7 +16,7 @@ import {
   normalizeBlogMarkdownForSite,
   postsToLinkIndex,
 } from "@/lib/blog-links";
-import { getPostThumbnail, resolveThumbnailSrc } from "@/lib/thumbnail";
+import { getPostCoverSrc } from "@/lib/thumbnail";
 
 function flattenText(node: React.ReactNode): string {
   if (typeof node === "string" || typeof node === "number") {
@@ -55,7 +55,7 @@ export function BlogPostView({
   const safeMarkdown = stripScriptTags(
     normalizeBlogMarkdownForSite(markdown, linkIndex),
   );
-  const thumbnail = getPostThumbnail(post);
+  const coverSrc = getPostCoverSrc(post);
   let headingIndex = 0;
 
   return (
@@ -84,12 +84,10 @@ export function BlogPostView({
         }
       />
 
-      {thumbnail ? (
-        <BlogCoverImage
-          src={resolveThumbnailSrc(thumbnail)}
-          alt={`Cover image for ${post.title}`}
-        />
-      ) : null}
+      <BlogCoverImage
+        src={coverSrc}
+        alt={`Cover image for ${post.title}`}
+      />
 
       <div className="space-y-6">
         <ReactMarkdown

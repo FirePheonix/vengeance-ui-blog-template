@@ -4,11 +4,6 @@ description: 'In-memory data, focused primitives, and event-loop simplicity.'
 author: Infrastructure
 inspiredBy: Redis design notes
 date: '2015-06-01'
-vengeance:
-  syncId: 5303873c-47eb-45c7-9da0-89e4cdda376a
-  obsidianPath: Blogs/systems/why-redis-is-fast.md
-  lastSyncedAt: '2026-08-25T21:24:37.371Z'
-  source: vengeance
 ---
 
 ## Memory first

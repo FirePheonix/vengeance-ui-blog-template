@@ -4,11 +4,6 @@ description: Effects synchronize external systems; they are not lifecycle clones
 author: React Notes
 inspiredBy: Dan Abramov / Overreacted
 date: '2021-03-01'
-vengeance:
-  syncId: fb5de84e-4e21-4f61-891c-3f26143198b3
-  obsidianPath: Blogs/frontend/complete-guide-useeffect.md
-  lastSyncedAt: '2026-08-25T21:24:37.353Z'
-  source: vengeance
 ---
 
 ## Mental model

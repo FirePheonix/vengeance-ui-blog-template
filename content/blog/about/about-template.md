@@ -4,11 +4,6 @@ description: 'This page can be your personal About page, with folder-routed mark
 author: Vengeance Blog
 inspiredBy: Vengeance UI docs layout
 date: '2026-07-24'
-vengeance:
-  syncId: df587571-a284-4615-ad59-0e77111437e5
-  obsidianPath: Blogs/about/about-template.md
-  lastSyncedAt: '2026-08-25T21:40:36.958Z'
-  source: vengeance
 thumbnail: /vengeance-image.png
 ---
 

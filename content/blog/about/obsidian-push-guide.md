@@ -4,11 +4,6 @@ description: 'Write in Obsidian, run one command, your note becomes a blog post.
 author: Vengeance Blog
 inspiredBy: Obsidian sync workflow
 date: '2026-08-26'
-vengeance:
-  syncId: 9953524e-52b4-4344-a486-a9e4f2d974bf
-  obsidianPath: Blogs/about/obsidian-push-guide.md
-  lastSyncedAt: '2026-08-25T21:24:37.336Z'
-  source: vengeance
 ---
 
 ## Setup first
