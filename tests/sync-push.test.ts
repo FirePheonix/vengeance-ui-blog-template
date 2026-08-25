@@ -4,7 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { convertWikilinks } from "../src/lib/sync/parse-obsidian";
 import {
-  blogDraftToFileContent,
+  obsidianDraftToBlogFileContent,
   obsidianNoteToBlogDraft,
 } from "../src/lib/sync/obsidian-to-blog";
 import { pushObsidianToVengeance } from "../src/lib/sync/push-to-vengeance";
@@ -41,7 +41,6 @@ describe("obsidian parsing", () => {
         mappings: [],
         obsidianPublishFolder: "Blog/Drafts",
         obsidianBlogRoot: "Blogs",
-      obsidianBlogRoot: "Blogs",
         ignore: [],
         syncFrontmatter: true,
         wikilinkMode: "markdown",
@@ -107,14 +106,13 @@ describe("push obsidian to vengeance", () => {
         mappings: [],
         obsidianPublishFolder: "Blog/Drafts",
         obsidianBlogRoot: "Blogs",
-      obsidianBlogRoot: "Blogs",
         ignore: [],
         syncFrontmatter: true,
         wikilinkMode: "markdown",
       },
     );
 
-    const serialized = blogDraftToFileContent(draft, "sync-id-1");
+    const serialized = obsidianDraftToBlogFileContent(draft, "sync-id-1");
     expect(serialized).toContain("syncId: sync-id-1");
     expect(serialized).toContain("source: obsidian");
   });

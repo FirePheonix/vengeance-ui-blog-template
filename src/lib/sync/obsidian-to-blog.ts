@@ -55,7 +55,7 @@ export function obsidianNoteToBlogDraft(
   };
 }
 
-export function blogDraftToFileContent(
+export function obsidianDraftToBlogFileContent(
   draft: BlogDraftFromObsidian,
   syncId: string,
 ) {

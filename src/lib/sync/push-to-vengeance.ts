@@ -11,7 +11,7 @@ import {
   saveSyncManifest,
 } from "./manifest";
 import {
-  blogDraftToFileContent,
+  obsidianDraftToBlogFileContent,
   obsidianNoteToBlogDraft,
 } from "./obsidian-to-blog";
 import { hashContent } from "./hash";
@@ -134,7 +134,7 @@ function syncOneObsidianNote(
   }
 
   const syncId = existing?.id ?? randomUUID();
-  const fileContent = blogDraftToFileContent(draft, syncId);
+  const fileContent = obsidianDraftToBlogFileContent(draft, syncId);
 
   fs.mkdirSync(path.dirname(blogAbsPath), { recursive: true });
   const isNewBlogFile = !fs.existsSync(blogAbsPath);

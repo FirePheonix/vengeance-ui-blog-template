@@ -10,7 +10,7 @@ import {
   saveSyncManifest,
 } from "./manifest";
 import {
-  blogDraftToFileContent,
+  vengeanceDraftToBlogFileContent,
   blogFileToObsidianDraft,
 } from "./blog-to-obsidian";
 import { hashContent } from "./hash";
@@ -84,7 +84,11 @@ function syncOneBlogPost(
   fs.mkdirSync(path.dirname(obsidianAbs), { recursive: true });
   const isNew = !fs.existsSync(obsidianAbs);
   fs.writeFileSync(obsidianAbs, draft.markdown, "utf8");
-  fs.writeFileSync(blogAbsPath, blogDraftToFileContent(draft, source), "utf8");
+  fs.writeFileSync(
+    blogAbsPath,
+    vengeanceDraftToBlogFileContent(draft, source),
+    "utf8",
+  );
 
   const manifestEntry = {
     id: syncId,

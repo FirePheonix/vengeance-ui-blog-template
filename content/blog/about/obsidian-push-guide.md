@@ -1,108 +1,97 @@
 ---
 title: Push from Obsidian to Vengeance
-description: >-
-  Write in your vault, then sync one note or a whole drafts folder into
-  content/blog/.
+description: 'Write in Obsidian, run one command, your note becomes a blog post.'
 author: Vengeance Blog
 inspiredBy: Obsidian sync workflow
 date: '2026-08-26'
+vengeance:
+  syncId: 9953524e-52b4-4344-a486-a9e4f2d974bf
+  obsidianPath: Blogs/about/obsidian-push-guide.md
+  lastSyncedAt: '2026-08-25T19:47:30.033Z'
+  source: vengeance
 ---
 
-## What push does
+## Setup first
 
-**Push** copies notes from your Obsidian vault **into** the Vengeance repo under `content/blog/`.
+Before push works, copy the example config and point it at **your** vault:
 
-Direction:
-
-```txt
-Obsidian vault  →  content/blog/<category>/
+```powershell
+copy .vengeance\config.example.json .vengeance\config.json
 ```
 
-Use push when you drafted a post in Obsidian and want it to show up on the site.
+Then edit `.vengeance/config.json`:
 
-## Where to write in Obsidian
+- **`vaultPath`** — absolute path to your Obsidian vault
+- **`mappings`** — which Obsidian folders map to which blog categories
+- **`obsidianBlogRoot`** — where pulled posts land in the vault (default: `Blogs`)
 
-Push only works for folders listed in `.vengeance/config.json` under `mappings`.
-
-Example mapping:
+Example:
 
 ```json
 {
-  "obsidianFolder": "Blogs/Drafts",
-  "blogCategory": "frontend",
-  "direction": "bidirectional"
+  "vaultPath": "C:/Users/you/Documents/MyVault",
+  "mappings": [
+    {
+      "obsidianFolder": "Blogs/Drafts",
+      "blogCategory": "frontend",
+      "direction": "bidirectional"
+    }
+  ],
+  "obsidianBlogRoot": "Blogs"
 }
 ```
 
-Notes in `Blogs/Drafts/` land in `content/blog/frontend/`.
+This file is gitignored — it stays on your machine only.
 
-For **about** pages, add a second mapping:
+<p align="center">
 
-```json
-{
-  "obsidianFolder": "Blogs/about",
-  "blogCategory": "about",
-  "direction": "bidirectional"
-}
+![icon:Obsidian](/obsidian-icon.webp) → ![icon:Vengeance](/vengeance-icon.svg)
+
+</p>
+
+## How push works
+
+```mermaid
+flowchart LR
+  A["Obsidian\nBlogs/Drafts/my-react-tips.md"] -->|push| B["Repo\ncontent/blog/frontend/my-react-tips.md"]
+  B --> C["Site\n/frontend/my-react-tips"]
 ```
 
-## Frontmatter
+## Example
 
-Add YAML at the top of your note:
+**You write** `Blogs/Drafts/my-react-tips.md` in Obsidian:
 
-```yaml
+```markdown
 ---
-title: "My Post Title"
-description: "One-line summary for the blog UI"
-author: "Your name"
-date: "2026-08-26"
+title: My React Tips
+description: Three hooks I use every day
 ---
+
+## useMemo
+Use when profiling shows a real cost.
 ```
 
-If you skip `title`, the sync uses the filename.
-
-## Push one note
-
-From the repo root:
+**You run:**
 
 ```powershell
-npx tsx scripts/sync-obsidian.ts push "Blogs/Drafts/your-draft-post.md"
+npx tsx scripts/sync-obsidian.ts push "Blogs/Drafts/my-react-tips.md"
 ```
 
-Or for an about page:
+**You get** `content/blog/frontend/my-react-tips.md` → open `/frontend/my-react-tips`.
+
+## Where to write
+
+| Obsidian folder | Goes to |
+|-----------------|---------|
+| `Blogs/Drafts/` | `content/blog/frontend/` |
+| `Blogs/about/` | `content/blog/about/` |
+
+Those folders must match `mappings` in `.vengeance/config.json`.
+
+## Commands
 
 ```powershell
-npx tsx scripts/sync-obsidian.ts push "Blogs/about/your-about-page.md"
+npm run sync:status                                              # check vault + counts
+npx tsx scripts/sync-obsidian.ts push "Blogs/Drafts/note.md"    # one file
+npx tsx scripts/sync-obsidian.ts push                           # all mapped folders
 ```
-
-## Push everything in mapped folders
-
-```powershell
-npm run sync:push
-```
-
-This scans every mapped Obsidian folder and syncs all `.md` files inside.
-
-## What you get on the blog side
-
-A pushed note becomes:
-
-```txt
-content/blog/<category>/<slug>.md
-```
-
-The blog file keeps internal `vengeance:` metadata (sync id, Obsidian path, last sync time). Your Obsidian copy stays clean — that metadata is stripped when pulling back.
-
-## Typical workflow
-
-1. Create or edit a note in a mapped folder (`Blogs/Drafts/` or `Blogs/about/`).
-2. Run push for one file (see above) or bulk `npm run sync:push`.
-3. Start the dev server and open the route — folder + filename become the URL.
-
-## Check before you push
-
-```powershell
-npm run sync:status
-```
-
-Shows vault path, linked entries, blog post counts, and how many notes sit in each mapped folder.
