@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# obsidian sync (local vault path — do not commit)
+.vengeance/config.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -15,6 +15,11 @@
     "test:lint": "npm run lint && npm run format:check",
     "test:build": "npm run build",
     "test:ci": "npm run test:lint && npm run test && npm run test:build",
+    "sync:status": "tsx scripts/sync-obsidian.ts status",
+    "sync:push": "tsx scripts/sync-obsidian.ts push vengeance",
+    "sync:pull": "tsx scripts/sync-obsidian.ts pull",
+    "sync:obsidian:status": "npm run sync:status",
+    "sync:obsidian:push": "npm run sync:push",
     "vercel:pull": "vercel pull",
     "vercel:deploy": "vercel deploy",
     "vercel:deploy:prod": "vercel deploy --prod"
@@ -46,6 +51,7 @@
     "eslint-config-next": "16.2.11",
     "prettier": "^3.9.6",
     "tailwindcss": "^4",
+    "tsx": "^4.20.5",
     "typescript": "^5",
     "vitest": "^4.1.10"
   }
