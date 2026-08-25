@@ -8,6 +8,7 @@ type BlogFrontmatter = {
   date?: string;
   inspiredBy?: string;
   tags?: string[];
+  thumbnail?: string;
   vengeance?: VengeanceFrontmatterSync;
 };
 
@@ -32,6 +33,7 @@ function cleanFrontmatter(data: BlogFrontmatter) {
   if (data.date) frontmatter.date = data.date;
   if (data.inspiredBy) frontmatter.inspiredBy = data.inspiredBy;
   if (data.tags?.length) frontmatter.tags = data.tags;
+  if (data.thumbnail) frontmatter.thumbnail = data.thumbnail;
 
   return frontmatter;
 }
@@ -89,6 +91,9 @@ export function vengeanceDraftToBlogFileContent(
 
   if (existing.tags?.length || parsedObsidian.tags?.length) {
     frontmatter.tags = existing.tags ?? parsedObsidian.tags;
+  }
+  if (existing.thumbnail || parsedObsidian.thumbnail) {
+    frontmatter.thumbnail = existing.thumbnail ?? parsedObsidian.thumbnail;
   }
 
   for (const key of Object.keys(frontmatter)) {

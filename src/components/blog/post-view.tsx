@@ -6,11 +6,13 @@ import remarkGfm from "remark-gfm";
 import {
   BlogArticle,
   BlogCodeBlock,
+  BlogCoverImage,
   BlogHeader,
 } from "@/components/blog/article";
 import { MermaidDiagram } from "@/components/blog/mermaid-diagram";
 import type { BlogPost, TOCHeading } from "@/lib/blog-types";
 import { getAdjacentPosts } from "@/lib/blog-server";
+import { getPostThumbnail, resolveThumbnailSrc } from "@/lib/thumbnail";
 
 function flattenText(node: React.ReactNode): string {
   if (typeof node === "string" || typeof node === "number") {
@@ -46,6 +48,7 @@ export function BlogPostView({
 }) {
   const { prev, next } = getAdjacentPosts(post.slug);
   const safeMarkdown = stripScriptTags(markdown);
+  const thumbnail = getPostThumbnail(post);
   let headingIndex = 0;
 
   return (
@@ -73,6 +76,13 @@ export function BlogPostView({
           </div>
         }
       />
+
+      {thumbnail ? (
+        <BlogCoverImage
+          src={resolveThumbnailSrc(thumbnail)}
+          alt={`Cover image for ${post.title}`}
+        />
+      ) : null}
 
       <div className="space-y-6">
         <ReactMarkdown

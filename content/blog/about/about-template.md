@@ -4,6 +4,7 @@ description: "This page can be your personal About page, with folder-routed mark
 author: "Vengeance Blog"
 inspiredBy: "Vengeance UI docs layout"
 date: "2026-07-24"
+thumbnail: "/vengeance-image.png"
 ---
 
 <video controls src="/vengeance-adding-blog-demo.mp4"></video>
@@ -47,6 +48,7 @@ inspiredBy: "Source or reference"
 date: "2026-07-24"
 readingTime: "6 min" # optional, auto-calculated if omitted
 isNew: true          # optional
+thumbnail: "/my-cover.png" # optional — cover image + link preview card
 ---
 ```
 

@@ -21,6 +21,8 @@ type Frontmatter = {
   date?: string;
   readingTime?: string;
   isNew?: boolean;
+  ogImage?: string;
+  thumbnail?: string;
 };
 
 function titleCase(value: string) {
@@ -148,6 +150,8 @@ export function getAllPosts(): BlogPost[] {
         date,
         readingTime: data.readingTime ?? getReadingTime(markdown),
         isNew: data.isNew ?? isRecentDate(date),
+        ogImage: data.ogImage,
+        thumbnail: data.thumbnail,
         category,
         markdown,
         headings,

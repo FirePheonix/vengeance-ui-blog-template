@@ -7,6 +7,7 @@ import {
   getBlogLinks,
   getPostBySegments,
 } from "@/lib/blog-server";
+import { buildPostMetadata } from "@/lib/metadata";
 
 type PageProps = {
   params: Promise<{ slug: string[] }>;
@@ -22,10 +23,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = getPostBySegments(slug);
   if (!post) return {};
-  return {
-    title: post.title,
-    description: post.description,
-  };
+  return buildPostMetadata(post);
 }
 
 export default async function BlogPostPage({ params }: PageProps) {

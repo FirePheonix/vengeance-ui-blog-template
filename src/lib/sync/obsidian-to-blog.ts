@@ -9,6 +9,7 @@ type ObsidianFrontmatter = {
   date?: string;
   inspiredBy?: string;
   tags?: string[];
+  thumbnail?: string;
 };
 
 export type BlogDraftFromObsidian = {
@@ -17,6 +18,7 @@ export type BlogDraftFromObsidian = {
   author: string;
   inspiredBy: string;
   date: string;
+  thumbnail?: string;
   markdown: string;
   syncMeta: {
     obsidianPath: string;
@@ -46,6 +48,7 @@ export function obsidianNoteToBlogDraft(
     author: data.author ?? "Vengeance Blog",
     inspiredBy: data.inspiredBy ?? "Obsidian",
     date: data.date ?? now.slice(0, 10),
+    thumbnail: data.thumbnail,
     markdown: body,
     syncMeta: {
       obsidianPath,
@@ -65,6 +68,7 @@ export function obsidianDraftToBlogFileContent(
     author: draft.author,
     inspiredBy: draft.inspiredBy,
     date: draft.date,
+    ...(draft.thumbnail ? { thumbnail: draft.thumbnail } : {}),
     vengeance: {
       syncId,
       obsidianPath: draft.syncMeta.obsidianPath,

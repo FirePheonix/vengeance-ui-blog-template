@@ -7,6 +7,7 @@ import {
   getBlogLinks,
   getDefaultPostPath,
 } from "@/lib/blog-server";
+import { buildSiteMetadata } from "@/lib/metadata";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,14 +25,7 @@ const orbitron = Orbitron({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Vengeance Blog Template",
-    template: "%s | Vengeance Blog",
-  },
-  description:
-    "Docs-shell blog template ported from Vengeance UI — Next.js + Tailwind v4 with a left index of sample technical essays.",
-};
+export const metadata: Metadata = buildSiteMetadata();
 
 export default async function RootLayout({
   children,
