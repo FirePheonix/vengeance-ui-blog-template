@@ -62,7 +62,7 @@ export function blogFileToObsidianDraft(
   };
 }
 
-export function blogDraftToFileContent(
+export function vengeanceDraftToBlogFileContent(
   draft: ObsidianDraftFromBlog,
   existingSource?: string,
 ) {

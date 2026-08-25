@@ -42,12 +42,18 @@ function parseManifestEntry(value: unknown, index: number): SyncManifestEntry {
     );
   }
 
+  const id = value.id as string;
+  const obsidianPath = value.obsidianPath as string;
+  const blogPath = value.blogPath as string;
+  const blogSlug = value.blogSlug as string;
+  const contentHash = value.contentHash as string;
+
   return {
-    id: value.id,
-    obsidianPath: value.obsidianPath.replace(/\\/g, "/"),
-    blogPath: value.blogPath.replace(/\\/g, "/"),
-    blogSlug: value.blogSlug.replace(/\\/g, "/"),
-    contentHash: value.contentHash,
+    id,
+    obsidianPath: obsidianPath.replace(/\\/g, "/"),
+    blogPath: blogPath.replace(/\\/g, "/"),
+    blogSlug: blogSlug.replace(/\\/g, "/"),
+    contentHash,
     lastSyncedAt,
     lastSource,
   };
