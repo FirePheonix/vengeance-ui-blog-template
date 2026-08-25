@@ -163,7 +163,7 @@ export function BlogPostView({
               return <BlogCodeBlock code={rawCode} title={language} />;
             },
             img: ({ src, alt }) => {
-              const isIcon = alt?.startsWith("icon:");
+              const isIcon = alt?.startsWith("icon:") === true;
               const label = isIcon ? alt.slice(5) : alt;
 
               if (isIcon) {
