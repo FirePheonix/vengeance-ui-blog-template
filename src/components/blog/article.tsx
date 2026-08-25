@@ -37,6 +37,20 @@ export function BlogHeader({
   );
 }
 
+export function BlogCoverImage({ src, alt }: { src: string; alt: string }) {
+  return (
+    <figure className="w-full max-w-4xl overflow-hidden rounded-md border border-neutral-300 bg-background shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        loading="eager"
+        className="block h-auto w-full object-cover"
+      />
+    </figure>
+  );
+}
+
 export function BlogSection({
   title,
   children,

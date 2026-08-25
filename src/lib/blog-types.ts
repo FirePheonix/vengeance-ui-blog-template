@@ -15,6 +15,8 @@ export type BlogPost = {
   date: string;
   readingTime: string;
   isNew?: boolean;
+  ogImage?: string;
+  thumbnail?: string;
   category: string;
   markdown: string;
   headings: TOCHeading[];
