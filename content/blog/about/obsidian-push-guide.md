@@ -7,7 +7,7 @@ date: '2026-08-26'
 vengeance:
   syncId: 9953524e-52b4-4344-a486-a9e4f2d974bf
   obsidianPath: Blogs/about/obsidian-push-guide.md
-  lastSyncedAt: '2026-08-25T19:46:02.854Z'
+  lastSyncedAt: '2026-08-25T19:47:30.033Z'
   source: vengeance
 ---
 
@@ -42,6 +42,12 @@ Example:
 ```
 
 This file is gitignored — it stays on your machine only.
+
+<p align="center">
+
+![icon:Obsidian](/obsidian-icon.webp) → ![icon:Vengeance](/vengeance-icon.svg)
+
+</p>
 
 ## How push works
 

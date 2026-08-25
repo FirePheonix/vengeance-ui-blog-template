@@ -162,17 +162,34 @@ export function BlogPostView({
 
               return <BlogCodeBlock code={rawCode} title={language} />;
             },
-            img: ({ src, alt }) => (
-              <div className="w-full max-w-4xl overflow-hidden rounded-md border border-neutral-300 bg-background shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={src ?? ""}
-                  alt={alt ?? ""}
-                  loading="lazy"
-                  className="block h-auto w-full"
-                />
-              </div>
-            ),
+            img: ({ src, alt }) => {
+              const isIcon = alt?.startsWith("icon:");
+              const label = isIcon ? alt.slice(5) : alt;
+
+              if (isIcon) {
+                return (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={src ?? ""}
+                    alt={label ?? ""}
+                    loading="lazy"
+                    className="inline-block h-6 w-6 object-contain align-middle"
+                  />
+                );
+              }
+
+              return (
+                <div className="w-full max-w-4xl overflow-hidden rounded-md border border-neutral-300 bg-background shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src ?? ""}
+                    alt={label ?? ""}
+                    loading="lazy"
+                    className="block h-auto w-full"
+                  />
+                </div>
+              );
+            },
             video: ({ src, children }) => (
               <div className="w-full max-w-4xl overflow-hidden rounded-md border border-neutral-300 bg-background shadow-[0_18px_44px_rgba(15,15,18,0.12)] dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-[0_18px_44px_rgba(0,0,0,0.45)]">
                 <video

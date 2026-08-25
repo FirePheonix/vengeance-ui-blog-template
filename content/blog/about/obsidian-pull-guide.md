@@ -7,7 +7,7 @@ date: '2026-08-26'
 vengeance:
   syncId: 915f7982-dfe0-4a2e-988b-eafb0d82ebbb
   obsidianPath: Blogs/about/obsidian-pull-guide.md
-  lastSyncedAt: '2026-08-25T19:46:04.454Z'
+  lastSyncedAt: '2026-08-25T19:47:31.473Z'
   source: vengeance
 ---
 
@@ -42,6 +42,12 @@ Example:
 ```
 
 This file is gitignored — it stays on your machine only.
+
+<p align="center">
+
+![icon:Vengeance](/vengeance-icon.svg) → ![icon:Obsidian](/obsidian-icon.webp)
+
+</p>
 
 ## How pull works
 
