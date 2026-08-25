@@ -6,73 +6,57 @@ inspiredBy: Obsidian sync workflow
 date: '2026-08-26'
 ---
 
-![Obsidian](/obsidian-icon.webp) → ![Vengeance](/vengeance-image.png)
+<div align="center" style="display:flex;align-items:center;justify-content:center;gap:16px;padding:8px 0 24px;">
+  <img src="/obsidian-icon.webp" alt="Obsidian" width="56" height="56" style="width:56px;height:56px;object-fit:contain;" />
+  <span style="font-size:28px;color:#a1a1aa;">→</span>
+  <img src="/vengeance-icon.svg" alt="Vengeance" width="56" height="56" style="width:56px;height:56px;object-fit:contain;" />
+</div>
 
 ## In one line
 
-You write a note in **Obsidian**. Push sends it to **Vengeance** as a file under `content/blog/`.
+Write in **Obsidian**, push once, the note lands in **Vengeance** as a blog file.
 
 ```mermaid
 flowchart LR
-  A["Obsidian\nBlogs/Drafts/my-react-tips.md"] -->|push| B["Vengeance\ncontent/blog/frontend/my-react-tips.md"]
-  B --> C["Live at /frontend/my-react-tips"]
+  O[Obsidian note] -->|push| V[Blog file in repo]
+  V --> R[Live page on site]
 ```
 
-## Example walkthrough
+## Example
 
-**1. Write this note in Obsidian** at `Blogs/Drafts/my-react-tips.md`:
+**You write** `Blogs/Drafts/my-react-tips.md` in Obsidian:
 
 ```markdown
 ---
 title: My React Tips
 description: Three hooks I use every day
-date: 2026-08-26
 ---
 
 ## useMemo
-
-Only when profiling shows a real cost.
-
-## useCallback
-
-For stable props to memoized children.
+Use when profiling shows a real cost.
 ```
 
-**2. Run push** from the repo root:
+**You run:**
 
 ```powershell
 npx tsx scripts/sync-obsidian.ts push "Blogs/Drafts/my-react-tips.md"
 ```
 
-**3. What you get in the repo:**
+**You get** `content/blog/frontend/my-react-tips.md` → open `/frontend/my-react-tips`.
 
-```txt
-content/blog/frontend/my-react-tips.md
-```
+## Where to write
 
-Open `/frontend/my-react-tips` in the dev server — done.
+| Obsidian folder | Goes to |
+|-----------------|---------|
+| `Blogs/Drafts/` | `content/blog/frontend/` |
+| `Blogs/about/` | `content/blog/about/` |
 
-## Where to write in Obsidian
+Set these in `.vengeance/config.json` under `mappings`.
 
-Push only reads **mapped folders** in `.vengeance/config.json`:
-
-| Obsidian folder | Becomes blog category |
-|-----------------|----------------------|
-| `Blogs/Drafts/` | `frontend` |
-| `Blogs/about/` | `about` |
-
-New draft? Use `Blogs/Drafts/`. About page? Use `Blogs/about/`.
-
-## Push all mapped notes at once
+## Commands
 
 ```powershell
-npx tsx scripts/sync-obsidian.ts push
+npm run sync:status                                              # check vault + counts
+npx tsx scripts/sync-obsidian.ts push "Blogs/Drafts/note.md"    # one file
+npx tsx scripts/sync-obsidian.ts push                           # all mapped folders
 ```
-
-## Check before pushing
-
-```powershell
-npm run sync:status
-```
-
-Shows your vault path, how many notes are waiting, and blog post counts.

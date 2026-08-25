@@ -6,79 +6,63 @@ inspiredBy: Obsidian sync workflow
 date: '2026-08-26'
 ---
 
-![Vengeance](/vengeance-image.png) → ![Obsidian](/obsidian-icon.webp)
+<div align="center" style="display:flex;align-items:center;justify-content:center;gap:16px;padding:8px 0 24px;">
+  <img src="/vengeance-icon.svg" alt="Vengeance" width="56" height="56" style="width:56px;height:56px;object-fit:contain;" />
+  <span style="font-size:28px;color:#a1a1aa;">→</span>
+  <img src="/obsidian-icon.webp" alt="Obsidian" width="56" height="56" style="width:56px;height:56px;object-fit:contain;" />
+</div>
 
 ## In one line
 
-The blog already has posts in git. Pull copies them into your **Obsidian** vault for editing.
+Posts already live in the repo. **Pull** copies them into your **Obsidian** vault to edit.
 
 ```mermaid
 flowchart LR
-  A["Vengeance\ncontent/blog/frontend/how-browsers-work.md"] -->|pull| B["Obsidian\nBlogs/frontend/how-browsers-work.md"]
+  V[Blog file in repo] -->|pull| O[Obsidian note in vault]
 ```
 
-## Example walkthrough
+## Example
 
-**1. A post already exists in the repo:**
+**Repo has:**
 
 ```txt
 content/blog/frontend/how-browsers-work.md
 ```
 
-**2. Pull it into Obsidian:**
+**You run:**
 
 ```powershell
 npx tsx scripts/sync-obsidian.ts pull "frontend/how-browsers-work.md"
 ```
 
-**3. Edit the copy in your vault** at `Blogs/frontend/how-browsers-work.md` — no internal sync metadata, just clean markdown.
+**Obsidian gets** `Blogs/frontend/how-browsers-work.md` — clean markdown, ready to edit.
 
-**4. Push your edits back** (see the push guide):
+**Edited something?** Push it back:
 
 ```powershell
 npx tsx scripts/sync-obsidian.ts push "Blogs/frontend/how-browsers-work.md"
 ```
 
-## Pull everything at once
+## Pull everything
 
 ```powershell
 npm run sync:pull
 ```
 
-Scans all of `content/blog/` and mirrors each file to `Blogs/<category>/<slug>.md`.
-
-Safe to re-run — unchanged files are skipped.
-
-## Path pattern
-
-```txt
-content/blog/frontend/example-post.md  →  Blogs/frontend/example-post.md
-content/blog/about/your-page.md        →  Blogs/about/your-page.md
-```
+Mirrors all of `content/blog/` → `Blogs/<category>/`. Safe to re-run.
 
 ## Push vs pull
 
-```mermaid
-flowchart TB
-  subgraph pull["Pull — repo → Obsidian"]
-    P1[content/blog/] --> P2[Blogs/category/]
-  end
-  subgraph push["Push — Obsidian → repo"]
-    S1[Blogs/Drafts/ or Blogs/about/] --> S2[content/blog/]
-  end
-```
-
 | | Pull | Push |
 |---|------|------|
-| Direction | repo → vault | vault → repo |
-| Bulk command | `npm run sync:pull` | `npx tsx scripts/sync-obsidian.ts push` |
+| Direction | repo → Obsidian | Obsidian → repo |
+| One file | `tsx ... pull "frontend/post.md"` | `tsx ... push "Blogs/Drafts/post.md"` |
+| All files | `npm run sync:pull` | `npx tsx scripts/sync-obsidian.ts push` |
 
-**Tip:** `Blogs/Drafts/` is for brand-new posts. Pulled posts live under `Blogs/frontend/`, `Blogs/about/`, etc.
+**Tip:** New drafts go in `Blogs/Drafts/`. Pulled posts sit under `Blogs/frontend/`, `Blogs/about/`, etc.
 
-## Check what's in the repo
+## Check counts
 
 ```powershell
 npm run sync:status
 ```
-
-Look for: `Blog posts in content/blog/: <count> (...)`
