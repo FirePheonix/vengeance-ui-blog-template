@@ -28,7 +28,7 @@ afterEach(() => {
 describe("sync config", () => {
   it("validates a well-formed config", () => {
     const config = validateSyncConfig({
-      vaultPath: "E:/brain/brain",
+      vaultPath: "/path/to/ObsidianVault",
       mappings: [
         {
           obsidianFolder: "Blog/Drafts",
@@ -39,7 +39,7 @@ describe("sync config", () => {
       obsidianPublishFolder: "Blog/Drafts",
     });
 
-    expect(config.vaultPath).toBe("E:/brain/brain");
+    expect(config.vaultPath).toBe("/path/to/ObsidianVault");
     expect(config.mappings[0].blogCategory).toBe("frontend");
   });
 

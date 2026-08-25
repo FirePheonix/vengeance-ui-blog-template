@@ -37,7 +37,7 @@ describe("obsidian parsing", () => {
       "---\ntitle: Hello\n---\n\n## Intro\nBody",
       "Blog/Drafts/hello.md",
       {
-        vaultPath: "E:/brain/brain",
+        vaultPath: "/path/to/ObsidianVault",
         mappings: [],
         obsidianPublishFolder: "Blog/Drafts",
         ignore: [],
@@ -60,8 +60,8 @@ describe("push obsidian to vengeance", () => {
     fs.mkdirSync(path.join(root, ".vengeance"), { recursive: true });
 
     fs.writeFileSync(
-      path.join(noteDir, "my-first-post.md"),
-      "---\ntitle: My First Post\ndescription: From Obsidian\n---\n\n## Intro\nHello",
+      path.join(noteDir, "example-post.md"),
+      "---\ntitle: Example Post\ndescription: From Obsidian\n---\n\n## Intro\nHello",
       "utf8",
     );
 
@@ -83,15 +83,15 @@ describe("push obsidian to vengeance", () => {
     const manifest = createEmptyManifest();
     const result = pushObsidianToVengeance(root, config, manifest);
 
-    expect(result.created).toEqual(["content/blog/frontend/my-first-post.md"]);
-    expect(fs.existsSync(path.join(root, "content/blog/frontend/my-first-post.md"))).toBe(true);
+    expect(result.created).toEqual(["content/blog/frontend/example-post.md"]);
+    expect(fs.existsSync(path.join(root, "content/blog/frontend/example-post.md"))).toBe(true);
 
     const output = fs.readFileSync(
-      path.join(root, "content/blog/frontend/my-first-post.md"),
+      path.join(root, "content/blog/frontend/example-post.md"),
       "utf8",
     );
-    expect(output).toContain("title: My First Post");
-    expect(output).toContain("obsidianPath: Blog/Drafts/my-first-post.md");
+    expect(output).toContain("title: Example Post");
+    expect(output).toContain("obsidianPath: Blog/Drafts/example-post.md");
     expect(manifest.entries).toHaveLength(1);
   });
 
@@ -100,7 +100,7 @@ describe("push obsidian to vengeance", () => {
       "# Title\n\nBody",
       "Blog/Drafts/test.md",
       {
-        vaultPath: "E:/brain/brain",
+        vaultPath: "/path/to/ObsidianVault",
         mappings: [],
         obsidianPublishFolder: "Blog/Drafts",
         ignore: [],

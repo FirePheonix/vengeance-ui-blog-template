@@ -8,15 +8,31 @@ import {
 const rootDir = path.resolve(process.cwd());
 
 function printUsage() {
-  console.log(`Usage:
-  npm run sync:obsidian status
-  npm run sync:obsidian push --to vengeance
+  console.log(`Obsidian sync commands:
+
+  npm run sync:status   Check vault connection and note counts
+  npm run sync:push     Copy notes from Obsidian into the blog
 `);
 }
 
-const command = process.argv[2];
+function getPushTarget() {
+  const args = process.argv.slice(3);
+
+  if (args[0] === "--to") {
+    return args[1];
+  }
+
+  return args[0];
+}
+
+const command = process.argv[2] ?? "help";
 
 try {
+  if (command === "help" || command === "--help" || command === "-h") {
+    printUsage();
+    process.exit(0);
+  }
+
   if (command === "status") {
     const status = getSyncStatus(rootDir);
     console.log(`Vault: ${status.vaultPath}`);
@@ -29,11 +45,7 @@ try {
     process.exit(0);
   }
 
-  if (
-    command === "push" &&
-    process.argv[3] === "--to" &&
-    process.argv[4] === "vengeance"
-  ) {
+  if (command === "push" && getPushTarget() === "vengeance") {
     const result = runPushToVengeance(rootDir);
     console.log("Obsidian -> Vengeance sync complete");
     if (result.created.length) {

@@ -15,7 +15,10 @@
     "test:lint": "npm run lint && npm run format:check",
     "test:build": "npm run build",
     "test:ci": "npm run test:lint && npm run test && npm run test:build",
-    "sync:obsidian": "tsx scripts/sync-obsidian.ts",
+    "sync:status": "tsx scripts/sync-obsidian.ts status",
+    "sync:push": "tsx scripts/sync-obsidian.ts push vengeance",
+    "sync:obsidian:status": "npm run sync:status",
+    "sync:obsidian:push": "npm run sync:push",
     "vercel:pull": "vercel pull",
     "vercel:deploy": "vercel deploy",
     "vercel:deploy:prod": "vercel deploy --prod"
