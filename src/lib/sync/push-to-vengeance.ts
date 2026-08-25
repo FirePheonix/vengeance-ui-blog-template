@@ -91,7 +91,10 @@ function toObsidianRelative(vaultPath: string, absPath: string) {
 }
 
 function normalizeObsidianTargetInput(input: string) {
-  return input.trim().replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
+  return input
+    .trim()
+    .replace(/\\/g, "/")
+    .replace(/^\/+|\/+$/g, "");
 }
 
 function syncOneObsidianNote(
@@ -233,7 +236,10 @@ export function pushObsidianToVengeance(
   for (const mapping of config.mappings) {
     if (!mappingAllowsObsidianPush(mapping)) continue;
 
-    const notes = collectObsidianNotes(config.vaultPath, mapping.obsidianFolder);
+    const notes = collectObsidianNotes(
+      config.vaultPath,
+      mapping.obsidianFolder,
+    );
     if (notes.length === 0) {
       result.skipped.push(
         `No notes found in ${mapping.obsidianFolder} (create this folder in your vault)`,
@@ -242,7 +248,14 @@ export function pushObsidianToVengeance(
     }
 
     for (const absNotePath of notes) {
-      syncOneObsidianNote(rootDir, config, manifest, absNotePath, mapping, result);
+      syncOneObsidianNote(
+        rootDir,
+        config,
+        manifest,
+        absNotePath,
+        mapping,
+        result,
+      );
     }
   }
 

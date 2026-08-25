@@ -86,7 +86,9 @@ describe("push obsidian to vengeance", () => {
     const result = pushObsidianToVengeance(root, config, manifest);
 
     expect(result.created).toEqual(["content/blog/frontend/example-post.md"]);
-    expect(fs.existsSync(path.join(root, "content/blog/frontend/example-post.md"))).toBe(true);
+    expect(
+      fs.existsSync(path.join(root, "content/blog/frontend/example-post.md")),
+    ).toBe(true);
 
     const output = fs.readFileSync(
       path.join(root, "content/blog/frontend/example-post.md"),

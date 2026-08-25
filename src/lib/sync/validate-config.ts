@@ -27,21 +27,30 @@ function parseMapping(value: unknown, index: number): FolderMapping {
   const direction = value.direction ?? "bidirectional";
 
   if (typeof obsidianFolder !== "string" || !obsidianFolder.trim()) {
-    throw new Error(`mappings[${index}].obsidianFolder must be a non-empty string`);
+    throw new Error(
+      `mappings[${index}].obsidianFolder must be a non-empty string`,
+    );
   }
 
   if (typeof blogCategory !== "string" || !blogCategory.trim()) {
-    throw new Error(`mappings[${index}].blogCategory must be a non-empty string`);
+    throw new Error(
+      `mappings[${index}].blogCategory must be a non-empty string`,
+    );
   }
 
-  if (typeof direction !== "string" || !SYNC_DIRECTIONS.has(direction as SyncDirection)) {
+  if (
+    typeof direction !== "string" ||
+    !SYNC_DIRECTIONS.has(direction as SyncDirection)
+  ) {
     throw new Error(
       `mappings[${index}].direction must be one of: ${[...SYNC_DIRECTIONS].join(", ")}`,
     );
   }
 
   return {
-    obsidianFolder: obsidianFolder.replace(/\\/g, "/").replace(/^\/+|\/+$/g, ""),
+    obsidianFolder: obsidianFolder
+      .replace(/\\/g, "/")
+      .replace(/^\/+|\/+$/g, ""),
     blogCategory: blogCategory.replace(/\\/g, "/").replace(/^\/+|\/+$/g, ""),
     direction: direction as SyncDirection,
   };
@@ -94,7 +103,9 @@ export function validateSyncConfig(value: unknown): SyncConfig {
 
   const obsidianBlogRoot = value.obsidianBlogRoot ?? "Blogs";
   if (typeof obsidianBlogRoot !== "string" || !obsidianBlogRoot.trim()) {
-    throw new Error("obsidianBlogRoot must be a non-empty string when provided");
+    throw new Error(
+      "obsidianBlogRoot must be a non-empty string when provided",
+    );
   }
 
   return {
