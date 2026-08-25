@@ -3,6 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type { FolderMapping, SyncConfig, SyncManifest } from "./types";
 import { loadSyncConfig } from "./config";
+import { getBlogSyncSummary } from "./push-to-obsidian";
 import {
   findManifestEntryByBlogSlug,
   findManifestEntryByObsidianPath,
@@ -289,5 +290,6 @@ export function getSyncStatus(rootDir: string) {
     vaultPath: config.vaultPath,
     linkedEntries: manifest.entries.length,
     folders: pendingFolders,
+    blogs: getBlogSyncSummary(rootDir),
   };
 }

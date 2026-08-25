@@ -115,6 +115,47 @@ Updated in blog`,
     expect(manifest.entries[0].lastSource).toBe("vengeance");
   });
 
+  it("pulls all blog posts from content/blog into Obsidian", () => {
+    const root = makeTempRoot();
+    const vault = path.join(root, "vault");
+
+    for (const [category, slug] of [
+      ["frontend", "post-a"],
+      ["classics", "post-b"],
+    ] as const) {
+      const blogDir = path.join(root, "content", "blog", category);
+      fs.mkdirSync(blogDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(blogDir, `${slug}.md`),
+        `---
+title: ${slug}
+---
+
+Body for ${slug}`,
+        "utf8",
+      );
+    }
+
+    const config: SyncConfig = {
+      vaultPath: vault,
+      mappings: [],
+      obsidianPublishFolder: "Blogs/Drafts",
+      obsidianBlogRoot: "Blogs",
+      ignore: [".obsidian"],
+      syncFrontmatter: true,
+      wikilinkMode: "markdown",
+    };
+
+    const manifest = { version: 1 as const, entries: [] };
+    const result = pushVengeanceToObsidian(root, config, manifest);
+
+    expect(result.created).toEqual([
+      "Blogs/classics/post-b.md",
+      "Blogs/frontend/post-a.md",
+    ]);
+    expect(manifest.entries).toHaveLength(2);
+  });
+
   it("pulls one vengeance blog into Blogs/category/file.md", () => {
     const root = makeTempRoot();
     const vault = path.join(root, "vault");

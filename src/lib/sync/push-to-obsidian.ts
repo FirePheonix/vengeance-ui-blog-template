@@ -2,12 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import matter from "gray-matter";
-import type {
-  FolderMapping,
-  SyncConfig,
-  SyncManifest,
-  VengeanceFrontmatterSync,
-} from "./types";
+import type { SyncConfig, SyncManifest, VengeanceFrontmatterSync } from "./types";
 import { loadSyncConfig } from "./config";
 import {
   findManifestEntryByBlogPath,
@@ -22,42 +17,9 @@ import { hashContent } from "./hash";
 import type { PushResult } from "./push-to-vengeance";
 import {
   buildObsidianPathForBlog,
+  collectAllBlogPosts,
   resolveBlogTarget,
 } from "./resolve-blog-target";
-
-const BLOG_ROOT = path.join("content", "blog");
-
-function mappingAllowsVengeancePush(mapping: FolderMapping) {
-  return (
-    mapping.direction === "bidirectional" ||
-    mapping.direction === "vengeance-to-obsidian"
-  );
-}
-
-function mappingForBlogCategory(config: SyncConfig, blogCategory: string) {
-  return config.mappings.find(
-    (mapping) =>
-      mapping.blogCategory === blogCategory &&
-      mappingAllowsVengeancePush(mapping),
-  );
-}
-
-function collectBlogPosts(rootDir: string, blogCategory: string) {
-  const folderAbs = path.join(rootDir, BLOG_ROOT, blogCategory);
-  if (!fs.existsSync(folderAbs)) {
-    return [] as string[];
-  }
-
-  return fs
-    .readdirSync(folderAbs, { withFileTypes: true })
-    .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
-    .map((entry) => path.join(folderAbs, entry.name))
-    .sort();
-}
-
-function toBlogRelative(rootDir: string, absPath: string) {
-  return path.relative(rootDir, absPath).replace(/\\/g, "/");
-}
 
 function readVengeanceMeta(source: string) {
   const parsed = matter(source);
@@ -67,7 +29,6 @@ function readVengeanceMeta(source: string) {
 function resolveObsidianPath(
   config: SyncConfig,
   blogSlug: string,
-  fileName: string,
   existingObsidianPath?: string,
   metaObsidianPath?: string,
 ) {
@@ -85,7 +46,7 @@ function syncOneBlogPost(
   blogPath: string,
   blogSlug: string,
   result: PushResult,
-  options: { force?: boolean; obsidianPathOverride?: string } = {},
+  options: { force?: boolean } = {},
 ) {
   const blogAbsPath = path.join(rootDir, blogPath);
   const source = fs.readFileSync(blogAbsPath, "utf8");
@@ -94,15 +55,12 @@ function syncOneBlogPost(
   const existing = findManifestEntryByBlogPath(manifest, blogPath);
   const meta = readVengeanceMeta(source);
   const syncId = existing?.id ?? meta?.syncId ?? randomUUID();
-  const obsidianPath =
-    options.obsidianPathOverride ??
-    resolveObsidianPath(
-      config,
-      blogSlug,
-      path.basename(blogAbsPath),
-      existing?.obsidianPath,
-      meta?.obsidianPath,
-    );
+  const obsidianPath = resolveObsidianPath(
+    config,
+    blogSlug,
+    existing?.obsidianPath,
+    meta?.obsidianPath,
+  );
   const obsidianAbs = path.join(config.vaultPath, obsidianPath);
 
   if (
@@ -111,9 +69,7 @@ function syncOneBlogPost(
     existing.contentHash === contentHash &&
     fs.existsSync(obsidianAbs)
   ) {
-    result.skipped.push(
-      `${blogSlug} (already in sync — edit the blog file, then pull again)`,
-    );
+    result.skipped.push(`${blogSlug} (already in sync)`);
     return;
   }
 
@@ -144,11 +100,11 @@ function syncOneBlogPost(
     manifest.entries = manifest.entries.map((item) =>
       item.id === existing.id ? manifestEntry : item,
     );
-    result[isNew ? "created" : "updated"].push(obsidianPath);
   } else {
     manifest.entries.push(manifestEntry);
-    result[isNew ? "created" : "updated"].push(obsidianPath);
   }
+
+  result[isNew ? "created" : "updated"].push(obsidianPath);
 }
 
 export function pullBlogByTarget(
@@ -180,49 +136,23 @@ export function pushVengeanceToObsidian(
   manifest: SyncManifest,
 ): PushResult {
   const result: PushResult = { created: [], updated: [], skipped: [] };
-  const handledBlogPaths = new Set<string>();
+  const blogPosts = collectAllBlogPosts(rootDir);
 
-  for (const entry of manifest.entries) {
-    const blogAbsPath = path.join(rootDir, entry.blogPath);
-    if (!fs.existsSync(blogAbsPath)) {
-      result.skipped.push(`${entry.blogPath} (blog file missing)`);
-      continue;
-    }
+  if (blogPosts.length === 0) {
+    result.skipped.push("No blog posts found in content/blog/");
+    saveSyncManifest(rootDir, manifest);
+    return result;
+  }
 
-    const blogCategory = entry.blogSlug.split("/")[0] ?? "";
-    const mapping = mappingForBlogCategory(config, blogCategory);
-    if (!mapping) {
-      result.skipped.push(`${entry.blogPath} (category not configured for pull)`);
-      continue;
-    }
-
-    handledBlogPaths.add(entry.blogPath.replace(/\\/g, "/"));
+  for (const post of blogPosts) {
     syncOneBlogPost(
       rootDir,
       config,
       manifest,
-      entry.blogPath,
-      entry.blogSlug,
+      post.blogPath,
+      post.blogSlug,
       result,
     );
-  }
-
-  for (const mapping of config.mappings) {
-    if (!mappingAllowsVengeancePush(mapping)) continue;
-
-    for (const blogAbsPath of collectBlogPosts(rootDir, mapping.blogCategory)) {
-      const blogPath = toBlogRelative(rootDir, blogAbsPath);
-      if (handledBlogPaths.has(blogPath)) continue;
-
-      const source = fs.readFileSync(blogAbsPath, "utf8");
-      const meta = readVengeanceMeta(source);
-      if (!meta?.syncId && !meta?.obsidianPath) {
-        continue;
-      }
-
-      const blogSlug = `${mapping.blogCategory}/${path.basename(blogAbsPath, ".md")}`;
-      syncOneBlogPost(rootDir, config, manifest, blogPath, blogSlug, result);
-    }
   }
 
   saveSyncManifest(rootDir, manifest);
@@ -238,4 +168,20 @@ export function runPushToObsidian(rootDir: string, target?: string) {
   }
 
   return pushVengeanceToObsidian(rootDir, config, manifest);
+}
+
+export function getBlogSyncSummary(rootDir: string) {
+  const posts = collectAllBlogPosts(rootDir);
+  const categories = new Map<string, number>();
+
+  for (const post of posts) {
+    categories.set(post.category, (categories.get(post.category) ?? 0) + 1);
+  }
+
+  return {
+    totalBlogPosts: posts.length,
+    categories: [...categories.entries()]
+      .map(([category, count]) => ({ category, count }))
+      .sort((a, b) => a.category.localeCompare(b.category)),
+  };
 }

@@ -2,17 +2,17 @@
   "vaultPath": "/absolute/path/to/your/ObsidianVault",
   "mappings": [
     {
-      "obsidianFolder": "Blog/Drafts",
+      "obsidianFolder": "Blogs/Drafts",
       "blogCategory": "frontend",
       "direction": "bidirectional"
     },
     {
-      "obsidianFolder": "Blog/Published",
-      "blogCategory": "classics",
+      "obsidianFolder": "Blogs/about",
+      "blogCategory": "about",
       "direction": "bidirectional"
     }
   ],
-  "obsidianPublishFolder": "Blog/Published",
+  "obsidianPublishFolder": "Blogs/Drafts",
   "obsidianBlogRoot": "Blogs",
   "ignore": [".obsidian", "Templates", "Daily"],
   "syncFrontmatter": true,

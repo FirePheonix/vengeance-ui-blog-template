@@ -60,3 +60,46 @@ export function buildObsidianPathForBlog(
 ) {
   return `${obsidianBlogRoot.replace(/\\/g, "/").replace(/^\/+|\/+$/g, "")}/${blogSlug}.md`;
 }
+
+export type IndexedBlogPost = {
+  blogPath: string;
+  blogSlug: string;
+  category: string;
+};
+
+export function collectAllBlogPosts(rootDir: string): IndexedBlogPost[] {
+  const blogRoot = path.join(rootDir, "content", "blog");
+  if (!fs.existsSync(blogRoot)) {
+    return [];
+  }
+
+  const posts: IndexedBlogPost[] = [];
+
+  for (const categoryEntry of fs.readdirSync(blogRoot, { withFileTypes: true })) {
+    if (!categoryEntry.isDirectory() || categoryEntry.name.startsWith(".")) {
+      continue;
+    }
+
+    const categoryDir = path.join(blogRoot, categoryEntry.name);
+    for (const fileEntry of fs.readdirSync(categoryDir, { withFileTypes: true })) {
+      if (
+        !fileEntry.isFile() ||
+        !fileEntry.name.endsWith(".md") ||
+        fileEntry.name.startsWith(".")
+      ) {
+        continue;
+      }
+
+      const slug = fileEntry.name.replace(/\.md$/i, "");
+      posts.push({
+        blogPath: path
+          .join("content", "blog", categoryEntry.name, fileEntry.name)
+          .replace(/\\/g, "/"),
+        blogSlug: `${categoryEntry.name}/${slug}`,
+        category: categoryEntry.name,
+      });
+    }
+  }
+
+  return posts.sort((a, b) => a.blogSlug.localeCompare(b.blogSlug));
+}

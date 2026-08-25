@@ -47,13 +47,13 @@ function printUsage() {
 
   npm run sync:status
   npm run sync:push
-  npm run sync:pull
+  npm run sync:pull              # pulls ALL posts from content/blog/
 
   Pull ONE Vengeance blog into Obsidian:
-  npm run sync:pull --path=frontend/how-browsers-work.md
+  npx tsx scripts/sync-obsidian.ts pull "frontend/example-post.md"
 
   Push ONE Obsidian note into the blog:
-  npm run sync:push --path=Blogs/Drafts/my-first-post.md
+  npx tsx scripts/sync-obsidian.ts push "Blogs/Drafts/your-draft-post.md"
 
   Path pattern:
   content/blog/frontend/example.md  ->  Blogs/frontend/example.md
@@ -74,6 +74,9 @@ try {
     const status = getSyncStatus(rootDir);
     console.log(`Vault: ${status.vaultPath}`);
     console.log(`Linked entries: ${status.linkedEntries}`);
+    console.log(
+      `Blog posts in content/blog/: ${status.blogs.totalBlogPosts} (${status.blogs.categories.map((c) => `${c.category}=${c.count}`).join(", ") || "none"})`,
+    );
     for (const folder of status.folders) {
       console.log(
         `- ${folder.obsidianFolder} -> content/blog/${folder.blogCategory}/ | exists=${folder.folderExists} notes=${folder.noteCount}`,
