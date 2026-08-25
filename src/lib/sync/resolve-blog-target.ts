@@ -25,7 +25,10 @@ export function normalizeBlogTargetInput(input: string) {
   return value.replace(/^\/+|\/+$/g, "");
 }
 
-export function resolveBlogTarget(rootDir: string, input: string): ResolvedBlogTarget {
+export function resolveBlogTarget(
+  rootDir: string,
+  input: string,
+): ResolvedBlogTarget {
   const blogSlug = normalizeBlogTargetInput(input);
 
   if (!blogSlug.includes("/")) {
@@ -75,13 +78,17 @@ export function collectAllBlogPosts(rootDir: string): IndexedBlogPost[] {
 
   const posts: IndexedBlogPost[] = [];
 
-  for (const categoryEntry of fs.readdirSync(blogRoot, { withFileTypes: true })) {
+  for (const categoryEntry of fs.readdirSync(blogRoot, {
+    withFileTypes: true,
+  })) {
     if (!categoryEntry.isDirectory() || categoryEntry.name.startsWith(".")) {
       continue;
     }
 
     const categoryDir = path.join(blogRoot, categoryEntry.name);
-    for (const fileEntry of fs.readdirSync(categoryDir, { withFileTypes: true })) {
+    for (const fileEntry of fs.readdirSync(categoryDir, {
+      withFileTypes: true,
+    })) {
       if (
         !fileEntry.isFile() ||
         !fileEntry.name.endsWith(".md") ||

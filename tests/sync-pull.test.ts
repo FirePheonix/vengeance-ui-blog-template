@@ -3,7 +3,10 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { blogFileToObsidianDraft } from "../src/lib/sync/blog-to-obsidian";
-import { pushVengeanceToObsidian, pullBlogByTarget } from "../src/lib/sync/push-to-obsidian";
+import {
+  pushVengeanceToObsidian,
+  pullBlogByTarget,
+} from "../src/lib/sync/push-to-obsidian";
 import type { SyncConfig, SyncManifest } from "../src/lib/sync/types";
 
 const tempDirs: string[] = [];

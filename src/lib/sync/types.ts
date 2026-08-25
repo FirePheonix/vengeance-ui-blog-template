@@ -1,7 +1,5 @@
 export type SyncDirection =
-  | "bidirectional"
-  | "obsidian-to-vengeance"
-  | "vengeance-to-obsidian";
+  "bidirectional" | "obsidian-to-vengeance" | "vengeance-to-obsidian";
 
 export type WikilinkMode = "markdown" | "plain";
 
