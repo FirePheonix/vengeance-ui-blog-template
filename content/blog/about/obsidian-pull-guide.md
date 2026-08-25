@@ -7,15 +7,9 @@ date: '2026-08-26'
 vengeance:
   syncId: 915f7982-dfe0-4a2e-988b-eafb0d82ebbb
   obsidianPath: Blogs/about/obsidian-pull-guide.md
-  lastSyncedAt: '2026-08-25T19:43:43.185Z'
+  lastSyncedAt: '2026-08-25T19:46:04.454Z'
   source: vengeance
 ---
-
-<div align="center" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 0 16px;">
-  <img src="/vengeance-icon.svg" alt="Vengeance" width="32" height="32" style="width:32px;height:32px;object-fit:contain;" />
-  <span style="font-size:18px;color:#a1a1aa;">→</span>
-  <img src="/obsidian-icon.webp" alt="Obsidian" width="32" height="32" style="width:32px;height:32px;object-fit:contain;" />
-</div>
 
 ## Setup first
 
@@ -28,7 +22,7 @@ copy .vengeance\config.example.json .vengeance\config.json
 Then edit `.vengeance/config.json`:
 
 - **`vaultPath`** — absolute path to your Obsidian vault
-- **`obsidianBlogRoot`** — folder in the vault where pulled posts go (default: `Blogs`)
+- **`obsidianBlogRoot`** — folder where pulled posts go (default: `Blogs`)
 - **`mappings`** — needed if you push edits back from Obsidian
 
 Example:
@@ -49,14 +43,14 @@ Example:
 
 This file is gitignored — it stays on your machine only.
 
-## In one line
-
-Posts already live in the repo. **Pull** copies them into your **Obsidian** vault to edit.
+## How pull works
 
 ```mermaid
 flowchart LR
-  V[Blog file in repo] -->|pull| O[Obsidian note in vault]
+  A["Repo\ncontent/blog/frontend/how-browsers-work.md"] -->|pull| B["Obsidian\nBlogs/frontend/how-browsers-work.md"]
 ```
+
+The `Blogs/` prefix comes from `obsidianBlogRoot` in your config.
 
 ## Example
 
@@ -72,7 +66,7 @@ content/blog/frontend/how-browsers-work.md
 npx tsx scripts/sync-obsidian.ts pull "frontend/how-browsers-work.md"
 ```
 
-**Obsidian gets** `Blogs/frontend/how-browsers-work.md` — path comes from `obsidianBlogRoot` in your config.
+**Obsidian gets** `Blogs/frontend/how-browsers-work.md` — clean markdown, ready to edit.
 
 **Edited something?** Push it back:
 
@@ -96,7 +90,7 @@ Mirrors all of `content/blog/` → `Blogs/<category>/`. Safe to re-run.
 | One file | `tsx ... pull "frontend/post.md"` | `tsx ... push "Blogs/Drafts/post.md"` |
 | All files | `npm run sync:pull` | `npx tsx scripts/sync-obsidian.ts push` |
 
-**Tip:** New drafts go in `Blogs/Drafts/`. Pulled posts sit under `Blogs/frontend/`, `Blogs/about/`, etc.
+**Tip:** New drafts → `Blogs/Drafts/`. Pulled posts → `Blogs/frontend/`, `Blogs/about/`, etc.
 
 ## Check counts
 
