@@ -1,80 +1,79 @@
 ---
 title: Pull from Vengeance into Obsidian
-description: >-
-  Bring existing repo blogs into your vault for editing — bulk or one file at a
-  time.
+description: Bring repo blog posts into your vault so you can edit them in Obsidian.
 author: Vengeance Blog
 inspiredBy: Obsidian sync workflow
 date: '2026-08-26'
 ---
 
-## What pull does
+![Vengeance](/vengeance-image.png) → ![Obsidian](/obsidian-icon.webp)
 
-**Pull** copies blog posts from the Vengeance repo **into** your Obsidian vault.
+## In one line
 
-Direction:
+The blog already has posts in git. Pull copies them into your **Obsidian** vault for editing.
 
-```txt
-content/blog/  →  Obsidian vault (Blogs/<category>/)
+```mermaid
+flowchart LR
+  A["Vengeance\ncontent/blog/frontend/how-browsers-work.md"] -->|pull| B["Obsidian\nBlogs/frontend/how-browsers-work.md"]
 ```
 
-Use pull when the blog already has posts in git and you want to edit them in Obsidian.
+## Example walkthrough
 
-## Where files land in Obsidian
-
-Pull uses `obsidianBlogRoot` from config (default: `Blogs`).
-
-Path pattern:
+**1. A post already exists in the repo:**
 
 ```txt
-content/blog/frontend/example-post.md
-  →  Blogs/frontend/example-post.md
-
-content/blog/about/your-about-page.md
-  →  Blogs/about/your-about-page.md
+content/blog/frontend/how-browsers-work.md
 ```
 
-Pull does **not** use the draft mappings — it mirrors the repo folder structure under `Blogs/`.
+**2. Pull it into Obsidian:**
 
-## Pull all blog posts
+```powershell
+npx tsx scripts/sync-obsidian.ts pull "frontend/how-browsers-work.md"
+```
+
+**3. Edit the copy in your vault** at `Blogs/frontend/how-browsers-work.md` — no internal sync metadata, just clean markdown.
+
+**4. Push your edits back** (see the push guide):
+
+```powershell
+npx tsx scripts/sync-obsidian.ts push "Blogs/frontend/how-browsers-work.md"
+```
+
+## Pull everything at once
 
 ```powershell
 npm run sync:pull
 ```
 
-Scans every `.md` file under `content/blog/` (frontend, classics, systems, about, etc.) and writes them into your vault.
+Scans all of `content/blog/` and mirrors each file to `Blogs/<category>/<slug>.md`.
 
-Re-running is safe: unchanged posts are skipped.
+Safe to re-run — unchanged files are skipped.
 
-## Pull one post
+## Path pattern
 
-```powershell
-npx tsx scripts/sync-obsidian.ts pull "frontend/example-post.md"
+```txt
+content/blog/frontend/example-post.md  →  Blogs/frontend/example-post.md
+content/blog/about/your-page.md        →  Blogs/about/your-page.md
 ```
 
-You can omit `content/blog/` and the `.md` extension — the sync resolves the path for you.
+## Push vs pull
 
-## What changes in Obsidian
+```mermaid
+flowchart TB
+  subgraph pull["Pull — repo → Obsidian"]
+    P1[content/blog/] --> P2[Blogs/category/]
+  end
+  subgraph push["Push — Obsidian → repo"]
+    S1[Blogs/Drafts/ or Blogs/about/] --> S2[content/blog/]
+  end
+```
 
-- Internal `vengeance:` blocks are **removed** from the note you edit — clean markdown only.
-- The repo copy keeps sync metadata so push and pull stay linked.
+| | Pull | Push |
+|---|------|------|
+| Direction | repo → vault | vault → repo |
+| Bulk command | `npm run sync:pull` | `npx tsx scripts/sync-obsidian.ts push` |
 
-## Pull vs push — quick reference
-
-| Command | Direction | Bulk scans |
-|---------|-----------|------------|
-| `sync:pull` | repo → vault | all of `content/blog/` |
-| `sync:push` | vault → repo | mapped Obsidian folders only |
-
-**Drafts** (`Blogs/Drafts/`) are for new work you push out. **Pulled** posts live under `Blogs/<category>/` matching the repo.
-
-## Suggested edit loop
-
-1. `npm run sync:pull` — get latest from repo into Obsidian.
-2. Edit in Obsidian under `Blogs/frontend/...` or `Blogs/about/...`.
-3. Push changes back with `npx tsx scripts/sync-obsidian.ts push "Blogs/frontend/your-post.md"`.
-
-For brand-new posts, write in `Blogs/Drafts/` or `Blogs/about/` and push instead.
+**Tip:** `Blogs/Drafts/` is for brand-new posts. Pulled posts live under `Blogs/frontend/`, `Blogs/about/`, etc.
 
 ## Check what's in the repo
 
@@ -82,10 +81,4 @@ For brand-new posts, write in `Blogs/Drafts/` or `Blogs/about/` and push instead
 npm run sync:status
 ```
 
-Look for the line:
-
-```txt
-Blog posts in content/blog/: <count> (about=N, classics=N, ...)
-```
-
-That count is what bulk pull will sync.
+Look for: `Blog posts in content/blog/: <count> (...)`
