@@ -13,9 +13,7 @@ import {
   loadSyncManifest,
   saveSyncManifest,
 } from "./manifest";
-import {
-  blogFileToObsidianDraft,
-} from "./blog-to-obsidian";
+import { blogFileToObsidianDraft } from "./blog-to-obsidian";
 import { hashContent } from "./hash";
 import type { PushResult } from "./push-to-vengeance";
 import {

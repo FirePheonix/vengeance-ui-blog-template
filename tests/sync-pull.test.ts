@@ -279,7 +279,11 @@ title: How Browsers Work
 
 Body`;
 
-    fs.writeFileSync(path.join(blogDir, "how-browsers-work.md"), blogSource, "utf8");
+    fs.writeFileSync(
+      path.join(blogDir, "how-browsers-work.md"),
+      blogSource,
+      "utf8",
+    );
 
     const config: SyncConfig = {
       vaultPath: vault,

@@ -84,10 +84,7 @@ export function BlogPostView({
         }
       />
 
-      <BlogCoverImage
-        src={coverSrc}
-        alt={`Cover image for ${post.title}`}
-      />
+      <BlogCoverImage src={coverSrc} alt={`Cover image for ${post.title}`} />
 
       <div className="space-y-6">
         <ReactMarkdown
