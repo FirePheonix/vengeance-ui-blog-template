@@ -1,9 +1,9 @@
 ---
-title: "What Programmers Should Know About Memory"
-description: "Why cache behavior dominates many real-world performance outcomes."
-author: "Performance"
-inspiredBy: "Ulrich Drepper (2007)"
-date: "2007-11-21"
+title: What Programmers Should Know About Memory
+description: Why cache behavior dominates many real-world performance outcomes.
+author: Performance
+inspiredBy: Ulrich Drepper (2007)
+date: '2007-11-21'
 ---
 
 ## Memory hierarchy
@@ -27,3 +27,5 @@ for (let r = 0; r < rows; r++)
 for (let c = 0; c < cols; c++)
   for (let r = 0; r < rows; r++) sum += matrix[r][c];
 ```
+
+For broader latency context, pair this with [Latency Numbers Every Developer Should Know](/systems/latency-numbers-every-dev-should-know).

@@ -4,11 +4,6 @@ description: Bring repo blog posts into your vault so you can edit them in Obsid
 author: Vengeance Blog
 inspiredBy: Obsidian sync workflow
 date: '2026-08-26'
-vengeance:
-  syncId: 915f7982-dfe0-4a2e-988b-eafb0d82ebbb
-  obsidianPath: Blogs/about/obsidian-pull-guide.md
-  lastSyncedAt: '2026-08-25T19:47:31.473Z'
-  source: vengeance
 ---
 
 ## Setup first
@@ -72,7 +67,7 @@ content/blog/frontend/how-browsers-work.md
 npx tsx scripts/sync-obsidian.ts pull "frontend/how-browsers-work.md"
 ```
 
-**Obsidian gets** `Blogs/frontend/how-browsers-work.md` — clean markdown, ready to edit.
+**Obsidian gets** `Blogs/frontend/how-browsers-work.md` — with `[[how-browsers-work]]` wikilinks for the Obsidian graph. The blog repo keeps markdown links like `[How Browsers Work](/frontend/how-browsers-work)` for the website.
 
 **Edited something?** Push it back:
 
@@ -96,7 +91,7 @@ Mirrors all of `content/blog/` → `Blogs/<category>/`. Safe to re-run.
 | One file | `tsx ... pull "frontend/post.md"` | `tsx ... push "Blogs/Drafts/post.md"` |
 | All files | `npm run sync:pull` | `npx tsx scripts/sync-obsidian.ts push` |
 
-**Tip:** New drafts → `Blogs/Drafts/`. Pulled posts → `Blogs/frontend/`, `Blogs/about/`, etc.
+**Tip:** New drafts → `Blogs/Drafts/`. Pulled posts → `Blogs/frontend/`, `Blogs/about/`, etc. For push workflow details, see [Push from Obsidian to Vengeance](/about/obsidian-push-guide).
 
 ## Check counts
 

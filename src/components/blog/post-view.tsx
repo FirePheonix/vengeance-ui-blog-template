@@ -11,8 +11,12 @@ import {
 } from "@/components/blog/article";
 import { MermaidDiagram } from "@/components/blog/mermaid-diagram";
 import type { BlogPost, TOCHeading } from "@/lib/blog-types";
-import { getAdjacentPosts } from "@/lib/blog-server";
-import { getPostThumbnail, resolveThumbnailSrc } from "@/lib/thumbnail";
+import { getAdjacentPosts, getAllPosts } from "@/lib/blog-server";
+import {
+  normalizeBlogMarkdownForSite,
+  postsToLinkIndex,
+} from "@/lib/blog-links";
+import { getPostCoverSrc } from "@/lib/thumbnail";
 
 function flattenText(node: React.ReactNode): string {
   if (typeof node === "string" || typeof node === "number") {
@@ -47,8 +51,11 @@ export function BlogPostView({
   headings: TOCHeading[];
 }) {
   const { prev, next } = getAdjacentPosts(post.slug);
-  const safeMarkdown = stripScriptTags(markdown);
-  const thumbnail = getPostThumbnail(post);
+  const linkIndex = postsToLinkIndex(getAllPosts());
+  const safeMarkdown = stripScriptTags(
+    normalizeBlogMarkdownForSite(markdown, linkIndex),
+  );
+  const coverSrc = getPostCoverSrc(post);
   let headingIndex = 0;
 
   return (
@@ -77,12 +84,7 @@ export function BlogPostView({
         }
       />
 
-      {thumbnail ? (
-        <BlogCoverImage
-          src={resolveThumbnailSrc(thumbnail)}
-          alt={`Cover image for ${post.title}`}
-        />
-      ) : null}
+      <BlogCoverImage src={coverSrc} alt={`Cover image for ${post.title}`} />
 
       <div className="space-y-6">
         <ReactMarkdown

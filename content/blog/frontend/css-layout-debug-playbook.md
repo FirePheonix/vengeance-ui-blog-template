@@ -1,9 +1,9 @@
 ---
-title: "CSS Layout Debug Playbook"
-description: "A practical sequence for fixing broken layouts fast."
-author: "Frontend Notes"
-inspiredBy: "Production UI debugging"
-date: "2024-02-18"
+title: CSS Layout Debug Playbook
+description: A practical sequence for fixing broken layouts fast.
+author: Frontend Notes
+inspiredBy: Production UI debugging
+date: '2024-02-18'
 ---
 
 ## Start with boxes
@@ -16,4 +16,4 @@ Most bugs come from ancestor constraints, not the child component itself.
 
 ## Isolate quickly
 
-Temporarily remove transforms and animations to identify structural issues.
+Temporarily remove transforms and animations to identify structural issues. If the bug spans layout and paint, start from [How Browsers Work](/frontend/how-browsers-work).

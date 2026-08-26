@@ -27,9 +27,18 @@ afterEach(() => {
 
 describe("obsidian parsing", () => {
   it("converts wikilinks to markdown links", () => {
-    expect(convertWikilinks("Try [[create a link]]", "markdown")).toBe(
-      "Try [create a link](create-a-link)",
-    );
+    const linkIndex = [
+      {
+        blogSlug: "frontend/create-a-link",
+        href: "/frontend/create-a-link",
+        title: "Create A Link",
+        fileStem: "create-a-link",
+      },
+    ];
+
+    expect(
+      convertWikilinks("Try [[create a link]]", "markdown", linkIndex),
+    ).toBe("Try [Create A Link](/frontend/create-a-link)");
   });
 
   it("builds blog draft from obsidian note", () => {

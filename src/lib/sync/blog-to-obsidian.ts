@@ -1,4 +1,6 @@
 import matter from "gray-matter";
+import { convertBlogLinksToWikilinks } from "./link-conversion";
+import type { BlogLinkIndexEntry } from "./link-index";
 import type { VengeanceFrontmatterSync } from "./types";
 
 type BlogFrontmatter = {
@@ -44,12 +46,18 @@ export function blogFileToObsidianDraft(
   blogSlug: string,
   obsidianPath: string,
   syncId: string,
+  linkIndex: BlogLinkIndexEntry[] = [],
+  siteUrl = "http://localhost:3000",
 ): ObsidianDraftFromBlog {
   const parsed = matter(source);
   const data = parsed.data as BlogFrontmatter;
   const now = new Date().toISOString();
   const frontmatter = cleanFrontmatter(data);
-  const body = parsed.content.trim();
+  const body = convertBlogLinksToWikilinks(
+    parsed.content.trim(),
+    linkIndex,
+    siteUrl,
+  );
 
   return {
     obsidianPath,
@@ -72,7 +80,10 @@ export function vengeanceDraftToBlogFileContent(
     ? matter(existingSource)
     : { data: {}, content: "" };
   const existing = parsed.data as BlogFrontmatter;
-  const body = matter(draft.markdown).content.trim();
+  // Pull writes wikilinks only to Obsidian — keep markdown links in the blog repo.
+  const body = existingSource
+    ? parsed.content.trim()
+    : matter(draft.markdown).content.trim();
   const parsedObsidian = matter(draft.markdown).data as BlogFrontmatter;
 
   const frontmatter: Record<string, unknown> = {

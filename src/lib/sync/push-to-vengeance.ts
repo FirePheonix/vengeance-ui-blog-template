@@ -15,6 +15,9 @@ import {
   obsidianNoteToBlogDraft,
 } from "./obsidian-to-blog";
 import { hashContent } from "./hash";
+import type { BlogLinkIndexEntry } from "./link-index";
+import { buildBlogLinkIndex } from "./link-index";
+import { loadEnvFiles } from "./load-env";
 import { slugifyFileName } from "./parse-obsidian";
 import {
   buildObsidianPathForBlog,
@@ -104,6 +107,7 @@ function syncOneObsidianNote(
   absNotePath: string,
   mapping: FolderMapping,
   result: PushResult,
+  linkIndex: BlogLinkIndexEntry[],
   options: { force?: boolean } = {},
 ) {
   const obsidianPath = toObsidianRelative(config.vaultPath, absNotePath);
@@ -113,7 +117,12 @@ function syncOneObsidianNote(
   }
 
   const source = fs.readFileSync(absNotePath, "utf8");
-  const draft = obsidianNoteToBlogDraft(source, obsidianPath, config);
+  const draft = obsidianNoteToBlogDraft(
+    source,
+    obsidianPath,
+    config,
+    linkIndex,
+  );
   const contentHash = hashContent(draft.markdown);
   const fileBase = path.basename(absNotePath, ".md");
   const slug = slugifyFileName(fileBase) || "untitled";
@@ -185,9 +194,17 @@ export function pushObsidianNoteByPath(
   }
 
   const result: PushResult = { created: [], updated: [], skipped: [] };
-  syncOneObsidianNote(rootDir, config, manifest, absNotePath, mapping, result, {
-    force: true,
-  });
+  const linkIndex = buildBlogLinkIndex(rootDir);
+  syncOneObsidianNote(
+    rootDir,
+    config,
+    manifest,
+    absNotePath,
+    mapping,
+    result,
+    linkIndex,
+    { force: true },
+  );
   saveSyncManifest(rootDir, manifest);
   return result;
 }
@@ -219,9 +236,17 @@ export function pushObsidianByBlogTarget(
   }
 
   const result: PushResult = { created: [], updated: [], skipped: [] };
-  syncOneObsidianNote(rootDir, config, manifest, absNotePath, mapping, result, {
-    force: true,
-  });
+  const linkIndex = buildBlogLinkIndex(rootDir);
+  syncOneObsidianNote(
+    rootDir,
+    config,
+    manifest,
+    absNotePath,
+    mapping,
+    result,
+    linkIndex,
+    { force: true },
+  );
   saveSyncManifest(rootDir, manifest);
   return result;
 }
@@ -232,6 +257,7 @@ export function pushObsidianToVengeance(
   manifest: SyncManifest,
 ): PushResult {
   const result: PushResult = { created: [], updated: [], skipped: [] };
+  const linkIndex = buildBlogLinkIndex(rootDir);
 
   for (const mapping of config.mappings) {
     if (!mappingAllowsObsidianPush(mapping)) continue;
@@ -255,6 +281,7 @@ export function pushObsidianToVengeance(
         absNotePath,
         mapping,
         result,
+        linkIndex,
       );
     }
   }
@@ -264,6 +291,7 @@ export function pushObsidianToVengeance(
 }
 
 export function runPushToVengeance(rootDir: string, target?: string) {
+  loadEnvFiles(rootDir);
   const config = loadSyncConfig(rootDir);
   const manifest = loadSyncManifest(rootDir);
 

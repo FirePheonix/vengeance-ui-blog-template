@@ -1,9 +1,9 @@
 ---
-title: "CAP Theorem in Practice"
-description: "Consistency and availability tradeoffs during network partitions."
-author: "Distributed Systems"
-inspiredBy: "Brewer / Gilbert & Lynch"
-date: "2012-05-01"
+title: CAP Theorem in Practice
+description: Consistency and availability tradeoffs during network partitions.
+author: Distributed Systems
+inspiredBy: Brewer / Gilbert & Lynch
+date: '2012-05-01'
 ---
 
 ## What CAP says
@@ -18,4 +18,4 @@ When partitions happen, distributed systems must choose between strong consisten
 
 ## Practical design
 
-For payments and identity, many teams prefer consistency during faults. For feeds and analytics counters, eventual consistency is often acceptable.
+For payments and identity, many teams prefer consistency during faults. For feeds and analytics counters, eventual consistency is often acceptable — see [Eventual Consistency Playbook](/systems/eventual-consistency-playbook).

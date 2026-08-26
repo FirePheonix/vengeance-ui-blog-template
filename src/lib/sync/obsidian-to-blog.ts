@@ -1,4 +1,5 @@
 import matter from "gray-matter";
+import type { BlogLinkIndexEntry } from "./link-index";
 import type { SyncConfig, SyncSource } from "./types";
 import { convertWikilinks } from "./parse-obsidian";
 
@@ -36,10 +37,15 @@ export function obsidianNoteToBlogDraft(
   source: string,
   obsidianPath: string,
   config: SyncConfig,
+  linkIndex: BlogLinkIndexEntry[] = [],
 ): BlogDraftFromObsidian {
   const parsed = matter(source);
   const data = parsed.data as ObsidianFrontmatter;
-  const body = convertWikilinks(parsed.content.trim(), config.wikilinkMode);
+  const body = convertWikilinks(
+    parsed.content.trim(),
+    config.wikilinkMode,
+    linkIndex,
+  );
   const now = new Date().toISOString();
 
   return {

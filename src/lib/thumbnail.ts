@@ -23,3 +23,14 @@ export function getPostThumbnail(post: {
 }) {
   return post.thumbnail ?? post.ogImage;
 }
+
+/** Cover shown on the post page — custom thumbnail or auto-generated OG card. */
+export function getPostCoverSrc(post: {
+  slug: string;
+  thumbnail?: string;
+  ogImage?: string;
+}) {
+  const custom = getPostThumbnail(post);
+  if (custom) return resolveThumbnailSrc(custom);
+  return `/og/${post.slug}`;
+}

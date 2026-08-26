@@ -1,9 +1,9 @@
 ---
-title: "MapReduce Explained Simply"
-description: "How map and reduce scale batch processing across machines."
-author: "Systems Notes"
-inspiredBy: "Dean & Ghemawat (2004)"
-date: "2004-12-01"
+title: MapReduce Explained Simply
+description: How map and reduce scale batch processing across machines.
+author: Systems Notes
+inspiredBy: Dean & Ghemawat (2004)
+date: '2004-12-01'
 ---
 
 ## Core idea
@@ -33,3 +33,5 @@ function reduce(word, counts) {
   emit(word, sum(counts));
 }
 ```
+
+For consistency tradeoffs in distributed pipelines, see [CAP Theorem in Practice](/classics/cap-theorem-in-practice).

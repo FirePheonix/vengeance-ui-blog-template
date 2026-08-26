@@ -1,9 +1,9 @@
 ---
-title: "A Complete Guide to useEffect"
-description: "Effects synchronize external systems; they are not lifecycle clones."
-author: "React Notes"
-inspiredBy: "Dan Abramov / Overreacted"
-date: "2021-03-01"
+title: A Complete Guide to useEffect
+description: Effects synchronize external systems; they are not lifecycle clones.
+author: React Notes
+inspiredBy: Dan Abramov / Overreacted
+date: '2021-03-01'
 ---
 
 ## Mental model
@@ -27,3 +27,5 @@ useEffect(() => {
 - Data transforms that belong in render
 - Chained effects updating state repeatedly
 - Fetching without cancellation
+
+After cleaning up effects, use [React Render Performance Checklist](/frontend/react-render-performance-checklist) to verify render cost in real screens.
