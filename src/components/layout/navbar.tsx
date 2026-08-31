@@ -82,7 +82,7 @@ export function Navbar({
           >
             <LogoIcon className="w-6 rotate-180 text-foreground" />
             <span className="font-[family-name:var(--font-orbitron)] text-xl font-bold tracking-tight">
-              Vengeance Blog
+              LASACA Blog
             </span>
           </Link>
 
